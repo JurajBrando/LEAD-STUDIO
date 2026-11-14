@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lead Studio CRM - Kanban Board</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{
+  --bg:#f8fafc;--panel:#ffffff;--ink:#1e293b;--mute:#64748b;--line:#e2e8f0;
+  --accent:#6366f1;--accent-ink:#fff;--accent-soft:#e0e7ff;
+  --new:#6366f1;--contacted:#8b5cf6;--replied:#ec4899;--negotiating:#f59e0b;--closed:#10b981;--lost:#ef4444;
+  --r:8px;
+}
+*{box-sizing:border-box}
+body{margin:0;font:13.5px/1.45 system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg)}
+.kanban{display:flex;gap:16px;padding:16px;overflow-x:auto;height:100vh}
+.column{flex:0 0 300px;background:var(--panel);border-radius:12px;border:1px solid var(--line);
+  display:flex;flex-direction:column;max-height:calc(100vh - 32px)}
+.col-header{padding:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.col-header .dot{width:10px;height:10px;border-radius:50%}
+.col-header .name{font-weight:600;flex:1}
+.col-header .count{font-size:11px;color:var(--mute);background:var(--bg);padding:2px 8px;border-radius:10px}
+.col-body{flex:1;overflow-y:auto;padding:8px;min-height:100px}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:8px;
+  cursor:move;transition:box-shadow 0.2s}
+.card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.card.dragging{opacity:0.5}
+.card .name{font-weight:600;margin-bottom:4px}
+.card .company{font-size:12px;color:var(--mute);margin-bottom:4px}
+.card .email{font-size:11px;color:var(--accent)}
+.card .meta{display:flex;gap:8px;margin-top:8px;font-size:10px;color:var(--mute)}
+.card .tag{background:var(--accent-soft);color:var(--accent);padding:2px 6px;border-radius:4px}
+.new .dot{background:var(--new)}.contacted .dot{background:var(--contacted)}
+.replied .dot{background:var(--replied)}.negotiating .dot{background:var(--negotiating)}
+.closed .dot{background:var(--closed)}.lost .dot{background:var(--lost)}
+.toolbar{display:flex;gap:8px;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.toolbar input{border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit}
+.toolbar button{background:var(--accent);color:var(--accent-ink);border:none;border-radius:6px;padding:6px 12px;
+  cursor:pointer;font:inherit;font-weight:600}
+.toolbar button:hover{filter:brightness(1.1)}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;
+  align-items:center;justify-content:center;z-index:1000}
+.modal.open{display:flex}
+.modal-content{background:var(--panel);border-radius:12px;padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto}
+.modal h2{margin-top:0}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-weight:600;margin-bottom:4px}
+.form-group input,select,textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit}
+.form-group textarea{min-height:80px;resize:vertical}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:24px}
+.modal-actions button{padding:8px 16px;border-radius:6px;border:none;cursor:pointer;font:inherit}
+.modal-actions .cancel{background:var(--bg)}
+.modal-actions .save{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.drop-zone{background:var(--accent-soft);border:2px dashed var(--accent);border-radius:8px;padding:16px;text-align:center;
+  color:var(--accent);margin:8px 0}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <input type="text" id="search" placeholder="Search leads...">
+  <button onclick="openModal()">+ Add Lead</button>
+  <button onclick="loadData()">Refresh</button>
+</div>
+<div class="kanban" id="kanban"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2 id="modal-title">Add Lead</h2>
+    <form id="lead-form">
+      <input type="hidden" id="lead-id">
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="lead-email" required>
+      </div>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" id="lead-name">
+      </div>
+      <div class="form-group">
+        <label>Company</label>
+        <input type="text" id="lead-company">
+      </div>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="lead-title">
+      </div>
+      <div class="form-group">
+        <label>Stage</label>
+        <select id="lead-stage">
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="replied">Replied</option>
+          <option value="negotiating">Negotiating</option>
+          <option value="closed">Closed</option>
+          <option value="lost">Lost</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="save">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const STAGES = [
+  {id:'new',name:'New',color:'var(--new)'},
+  {id:'contacted',name:'Contacted',color:'var(--contacted)'},
+  {id:'replied',name:'Replied',color:'var(--replied)'},
+  {id:'negotiating',name:'Negotiating',color:'var(--negotiating)'},
+  {id:'closed',name:'Closed',color:'var(--closed)'},
+  {id:'lost',name:'Lost',color:'var(--lost)'}
+];
+
+let leads = [];
+
+function renderKanban() {
+  const kanban = document.getElementById('kanban');
+  kanban.innerHTML = '';
+
+  STAGES.forEach(stage => {
+    const stageLeads = leads.filter(l => l.stage === stage.id);
+    const column = document.createElement('div');
+    column.className = `column ${stage.id}`;
+    column.innerHTML = `
+      <div class="col-header">
+        <div class="dot"></div>
+        <span class="name">${stage.name}</span>
+        <span class="count">${stageLeads.length}</span>
+      </div>
+      <div class="col-body" data-stage="${stage.id}"></div>
+    `;
+    kanban.appendChild(column);
+
+    const body = column.querySelector('.col-body');
+    stageLeads.forEach(lead => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.draggable = true;
+      card.dataset.id = lead.id;
+      card.innerHTML = `
+        <div class="name">${lead.name || 'Unknown'}</div>
+        <div class="company">${lead.company || ''}</div>
+        <div class="email">${lead.email}</div>
+        <div class="meta">
+          <span class="tag">${lead.source || 'Manual'}</span>
+        </div>
+      `;
+      card.addEventListener('dragstart', handleDragStart);
+      card.addEventListener('dragend', handleDragEnd);
+      body.appendChild(card);
+    });
+
+    body.addEventListener('dragover', handleDragOver);
+    body.addEventListener('drop', handleDrop);
+  });
+}
+
+function handleDragStart(e) {
+  e.target.classList.add('dragging');
+  e.dataTransfer.setData('text/plain', e.target.dataset.id);
+}
+
+function handleDragEnd(e) {
+  e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const leadId = e.dataTransfer.getData('text/plain');
+  const newStage = e.currentTarget.dataset.stage;
+  moveLead(leadId, newStage);
+}
+
+function moveLead(leadId, newStage) {
+  const lead = leads.find(l => l.id === leadId);
+  if (lead) {
+    lead.stage = newStage;
+    // TODO: Save to backend
+    renderKanban();
+  }
+}
+
+function openModal(lead = null) {
+  const modal = document.getElementById('modal');
+  const form = document.getElementById('lead-form');
+  const title = document.getElementById('modal-title');
+
+  if (lead) {
+    title.textContent = 'Edit Lead';
+    document.getElementById('lead-id').value = lead.id;
+    document.getElementById('lead-email').value = lead.email;
+    document.getElementById('lead-name').value = lead.name || '';
+    document.getElementById('lead-company').value = lead.company || '';
+    document.getElementById('lead-title').value = lead.title || '';
+    document.getElementById('lead-stage').value = lead.stage;
+  } else {
+    title.textContent = 'Add Lead';
+    form.reset();
+    document.getElementById('lead-id').value = '';
+  }
+
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('lead-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const leadId = document.getElementById('lead-id').value;
+  const lead = {
+    id: leadId || `lead_${Date.now()}`,
+    email: document.getElementById('lead-email').value,
+    name: document.getElementById('lead-name').value,
+    company: document.getElementById('lead-company').value,
+    title: document.getElementById('lead-title').value,
+    stage: document.getElementById('lead-stage').value,
+    source: 'Manual'
+  };
+
+  if (leadId) {
+    const index = leads.findIndex(l => l.id === leadId);
+    if (index !== -1) leads[index] = lead;
+  } else {
+    leads.push(lead);
+  }
+
+  // TODO: Save to backend
+  closeModal();
+  renderKanban();
+});
+
+function loadData() {
+  // TODO: Load from backend
+  // For demo, add sample data
+  if (leads.length === 0) {
+    leads = [
+      {id:'1',email:'john@example.com',name:'John Smith',company:'Acme Corp',title:'CEO',stage:'new',source:'CC_BULK'},
+      {id:'2',email:'jane@example.com',name:'Jane Doe',company:'Tech Inc',title:'CTO',stage:'contacted',source:'OSM'},
+      {id:'3',email:'bob@example.com',name:'Bob Johnson',company:'Startup XYZ',title:'Founder',stage:'replied',source:'Manual'},
+      {id:'4',email:'alice@example.com',name:'Alice Williams',company:'Big Corp',title:'VP Sales',stage:'negotiating',source:'CC_BULK'},
+      {id:'5',email:'charlie@example.com',name:'Charlie Brown',company:'Small Biz',title:'Owner',stage:'closed',source:'Manual'}
+    ];
+  }
+  renderKanban();
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase();
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = text.includes(query) ? '' : 'none';
+  });
+});
+
+loadData();
+</script>
+</body>
+</html>

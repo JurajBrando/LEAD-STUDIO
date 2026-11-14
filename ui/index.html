@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lead Studio</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect width='22' height='22' rx='4' fill='%232a2038'/%3E%3Crect x='3' y='4' width='16' height='3.4' rx='1' fill='%23e9a51c'/%3E%3Crect x='5.5' y='9.3' width='11' height='3.4' rx='1' fill='%23e9a51c' opacity='.78'/%3E%3Crect x='8' y='14.6' width='6' height='3.4' rx='1' fill='%23e9a51c' opacity='.55'/%3E%3C/svg%3E">
+<style>
+:root{
+  --side:#fafafa;--side-line:#ececf1;--side-ink:#2b2b33;--side-mute:#7a7a88;--side-hi:#f0f0f4;--side-on:#eceaff;
+  --bg:#ffffff;--panel:#ffffff;--ink:#1c1c22;--mute:#71717f;--line:#e8e8ee;--soft:#f6f6f9;--stripe:#fcfcfd;
+  --accent:#4f46e5;--accent-ink:#ffffff;--accent-soft:#eceaff;--link:#4f46e5;--sel:#f3f2ff;
+  --hot:#d1372b;--warm:#b06000;--ok:#15935f;
+  --ui:"Inter","Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"Cascadia Mono",Consolas,ui-monospace,monospace;
+  --r:8px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --side:#121216;--side-line:#232329;--side-ink:#e9e9f0;--side-mute:#8b8b9a;--side-hi:#1d1d23;--side-on:#262152;
+  --bg:#0f0f13;--panel:#15151a;--ink:#e9e9f0;--mute:#9a9aa8;--line:#26262e;--soft:#1a1a20;--stripe:#17171d;
+  --accent:#6d63ff;--accent-ink:#fff;--accent-soft:#241f4d;--link:#a79cff;--sel:#1e1b3a;
+  --hot:#ff8d82;--warm:#eeb15f;--ok:#4fd49b;
+}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font:13.5px/1.45 var(--ui);color:var(--ink);background:var(--bg);
+  display:grid;grid-template-columns:232px minmax(0,1fr);grid-template-rows:minmax(0,1fr);
+  -webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+a{color:var(--link)}
+
+/* ---------- sidebar ---------- */
+.side{background:var(--side);color:var(--side-ink);border-right:1px solid var(--side-line);
+  display:flex;flex-direction:column;min-height:0}
+.brand{display:flex;align-items:center;gap:9px;padding:13px 14px 11px}
+.brand .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;flex:none}
+.brand .bname{font-size:15px;font-weight:650;letter-spacing:-.1px}
+.brand .ver{color:var(--side-mute);font-size:11px;margin-left:auto}
+.srch{padding:0 12px 10px}
+.srch label{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--side-line);
+  border-radius:7px;padding:5px 8px;color:var(--side-mute)}
+.srch input{all:unset;flex:1;min-width:0;font-size:12.5px;color:var(--side-ink)}
+.srch kbd{font:10.5px var(--ui);border:1px solid var(--side-line);border-radius:4px;padding:0 4px;color:var(--side-mute)}
+.nav{flex:1;min-height:0;overflow:auto;padding:2px 8px 10px;display:flex;flex-direction:column;gap:1px}
+.nav button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:9px;width:100%;
+  padding:6px 9px;border-radius:7px;cursor:pointer;color:var(--side-ink);font-size:13px}
+.nav button:hover{background:var(--side-hi)}
+.nav button.on{background:var(--side-on);color:var(--accent);font-weight:600}
+.nav button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.nav button svg{flex:none;opacity:.72}
+.nav button.on svg{opacity:1}
+.nav .sec{color:var(--side-mute);font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:13px 9px 4px}
+.nav .n{margin-left:auto;font-size:11px;color:var(--side-mute);font-variant-numeric:tabular-nums}
+.nav button.on .n{color:inherit}
+.nav .grow{flex:1;min-height:6px}
+.nav .rule{height:1px;background:var(--side-line);margin:8px 9px}
+.wscard{display:flex;align-items:center;gap:9px;padding:10px 12px;border-top:1px solid var(--side-line);min-width:0}
+.wscard .av{width:28px;height:28px;border-radius:7px;background:var(--accent);color:#fff;display:grid;place-items:center;
+  font-size:12px;font-weight:650;flex:none}
+.wscard .t{min-width:0}
+.wscard .t b{display:block;font-size:12.5px;font-weight:600}
+.wscard .t span{display:block;font-size:11px;color:var(--side-mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- main column ---------- */
+.col{min-width:0;min-height:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:6px;height:42px;padding:0 14px;border-bottom:1px solid var(--line);
+  background:var(--panel);flex:none}
+.crumbs{display:flex;align-items:center;gap:4px;min-width:0}
+.crumbs .c{display:flex;align-items:center;gap:6px;padding:4px 9px;border-radius:7px;color:var(--mute);font-size:12.5px;
+  white-space:nowrap}
+.crumbs .c.on{background:var(--soft);color:var(--ink);font-weight:600}
+.crumbs .sepr{color:var(--line)}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--mute);font-size:11.5px;min-width:0}
+.topbar .right .p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:36vw;font:11px var(--mono)}
+main{min-width:0;min-height:0;display:flex;flex-direction:column;flex:1}
+
+/* ---------- toolbar (.bar) ---------- */
+.bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 12px;background:var(--panel);
+  border-bottom:1px solid var(--line)}
+.bar h1{font-size:13.5px;font-weight:650;margin:0 8px 0 2px;white-space:nowrap}
+.bar .sp{flex:1}
+.bar .note{color:var(--mute);font-size:12px}
+.body{flex:1;min-height:0;overflow:auto;padding:16px}
+.body.flush{padding:0;display:flex;flex-direction:column}
+.lead{color:var(--mute);margin:0 0 12px;max-width:78ch}
+
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:4px 10px;cursor:pointer;
+  white-space:nowrap;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;line-height:1.7}
+.btn:hover{background:var(--soft)}
+.btn.go{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.go:hover{filter:brightness(1.08)}
+.btn.stop{background:var(--hot);border-color:var(--hot);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+input[type=text],input[type=password],input[type=number],select,textarea{border:1px solid var(--line);background:var(--panel);
+  border-radius:7px;padding:4px 8px;min-width:0;font-size:12.5px}
+textarea{width:100%;min-height:92px;resize:vertical;line-height:1.45;font-size:13px}
+.tag{display:inline-flex;align-items:center;font-size:11.5px;padding:2px 8px;border-radius:7px;background:var(--soft);
+  border:1px solid var(--line);color:var(--mute);white-space:nowrap}
+.tag.run{color:var(--accent);background:var(--accent-soft);border-color:transparent;font-weight:600}
+.tag.bad{color:var(--hot);border-color:currentColor;background:transparent}
+.tag.ok{color:var(--ok);border-color:currentColor;background:transparent}
+
+/* ---------- data grid ---------- */
+.gridwrap{flex:1;min-height:0;overflow:auto;background:var(--panel)}
+table.grid{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:100%}
+.grid th{position:sticky;top:0;z-index:1;background:var(--soft);text-align:left;font-weight:600;padding:0 10px;height:32px;
+  border-bottom:1px solid var(--line);border-right:1px solid var(--line);white-space:nowrap;color:var(--ink)}
+.grid th .h{display:flex;align-items:center;gap:7px}
+.grid th i{font-style:normal;font-size:10px;font-weight:700;color:var(--mute);width:14px;height:14px;border-radius:4px;
+  background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;flex:none}
+.grid th b{font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.grid th u{margin-left:auto;color:var(--mute);text-decoration:none;font-size:9px;opacity:.7}
+.grid tr.fill td{position:sticky;top:32px;z-index:1;background:var(--panel);color:var(--mute);font-size:11px;height:22px;
+  padding:0 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.grid tr.fill td.rn{z-index:2}
+.grid td{padding:0 10px;height:30px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);max-width:340px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.grid tbody tr:hover td{background:var(--sel)}
+.grid .rn{color:var(--mute);text-align:right;font-variant-numeric:tabular-nums;position:sticky;left:0;background:var(--panel);
+  min-width:44px;border-right:1px solid var(--line)}
+.grid th.rn{background:var(--soft);z-index:2}
+.grid tbody tr:hover .rn{background:var(--sel)}
+.grid td.wrap{white-space:normal;min-width:280px;max-width:460px;padding:6px 10px;height:auto;line-height:1.4}
+.HOT{color:var(--hot);font-weight:700}.WARM{color:var(--warm);font-weight:700}
+.empty{padding:44px 18px;color:var(--mute);max-width:70ch}
+.empty b{color:var(--ink);display:block;font-size:15px;margin-bottom:4px;font-weight:650}
+
+/* ---------- status strip ---------- */
+.status{flex:none;background:var(--panel);border-top:1px solid var(--line);display:flex;align-items:center;
+  font-size:11.5px;color:var(--mute);height:28px;padding:0 6px;overflow:hidden}
+.status span,.status button{padding:0 10px;height:100%;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.status button{all:unset;box-sizing:border-box;cursor:pointer;padding:0 10px;height:100%;display:flex;align-items:center;
+  gap:6px;color:var(--mute);border-radius:6px}
+.status button:hover{background:var(--soft);color:var(--ink)}
+.status .path{margin-left:auto;overflow:hidden;text-overflow:ellipsis}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+.dot.ok{background:var(--ok)}.dot.run{background:var(--accent)}.dot.bad{background:var(--hot)}
+
+/* ---------- tool list ---------- */
+.tools{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tool{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,280px) auto;gap:14px;align-items:center;
+  padding:12px 14px;border-bottom:1px solid var(--line)}
+.tool:last-child{border-bottom:0}
+.tool:hover{background:var(--stripe)}
+.tool h3{margin:0 0 2px;font-size:13.5px;font-weight:650;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tool p{margin:0;color:var(--mute);font-size:12.5px}
+.tool .file{font:11.5px var(--mono);color:var(--mute);margin-top:3px;word-break:break-all}
+.tool input{width:100%;font:12px var(--mono)}
+.tool .acts{display:flex;gap:6px}
+@media (max-width:900px){.tool{grid-template-columns:1fr}}
+
+/* ---------- forms ---------- */
+.form{display:grid;grid-template-columns:170px minmax(0,640px);gap:10px 16px;align-items:start;max-width:860px}
+.form label{padding-top:6px;color:var(--mute)}
+.form .full{grid-column:1/3}
+.form small{display:block;color:var(--mute);margin-top:4px}
+.checks{display:flex;flex-wrap:wrap;gap:4px 6px}
+.checks label{padding:3px 10px;border:1px solid var(--line);border-radius:14px;cursor:pointer;color:var(--ink);
+  background:var(--panel);font-size:12.5px}
+.checks input{position:absolute;opacity:0;pointer-events:none}
+.checks label:has(input:checked){background:var(--accent-soft);border-color:transparent;color:var(--accent);font-weight:600}
+.checks label:has(input:focus-visible){outline:2px solid var(--accent)}
+section.box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:14px;
+  max-width:900px}
+section.box h2{font-size:14.5px;margin:0 0 4px;font-weight:650}
+section.box p{margin:0 0 12px;color:var(--mute);max-width:74ch}
+pre.code{background:var(--soft);border:1px solid var(--line);border-radius:7px;padding:10px 12px;font:12px/1.5 var(--mono);
+  overflow:auto;margin:0 0 8px;white-space:pre-wrap;word-break:break-all}
+pre.log{flex:1;min-height:0;margin:0;background:#101014;color:#d8d8e4;padding:12px 16px;font:12px/1.5 var(--mono);
+  overflow:auto;white-space:pre-wrap;word-break:break-word}
+.jobs td{white-space:nowrap}.jobs tbody tr{cursor:pointer}
+.crumb{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
+.crumb button{all:unset;cursor:pointer;color:var(--mute);padding:3px 7px;border-radius:6px;font-size:12.5px}
+.crumb button:hover{background:var(--soft);color:var(--ink)}
+.crumb span{color:var(--line)}
+
+/* ---------- filter chips ---------- */
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--panel);border-bottom:1px solid var(--line);
+  align-items:center}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;cursor:pointer;display:flex;
+  align-items:center;gap:6px;white-space:nowrap;font-size:12.5px}
+.chip:hover{background:var(--soft)}
+.chip.set{border-color:transparent;color:var(--accent);background:var(--accent-soft);font-weight:600}
+.chip.open{box-shadow:0 0 0 2px var(--accent-soft);border-color:var(--accent)}
+.chip .k{font-size:10.5px;background:var(--accent);color:#fff;border-radius:6px;padding:0 5px;font-weight:600}
+.panel{background:var(--soft);border-bottom:1px solid var(--line);padding:12px 14px 14px}
+.panel h3{margin:0 0 8px;font-size:12.5px;font-weight:650}
+.panel .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:9px}
+.panel input[type=text]{flex:1;min-width:180px}
+.sugg{display:flex;flex-wrap:wrap;gap:5px;max-height:148px;overflow:auto}
+.sugg button{all:unset;cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:2px 9px;
+  font-size:12.5px}
+.sugg button:hover{border-color:var(--accent)}
+.sugg button.on{background:var(--accent-soft);border-color:transparent;color:var(--accent);font-weight:600}
+.sugg button .c{color:var(--mute);font-size:11px;margin-left:5px;font-variant-numeric:tabular-nums}
+.sugg button.on .c{color:inherit}
+.toks{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.tok{border:1px solid transparent;color:var(--accent);background:var(--accent-soft);border-radius:7px;padding:2px 6px 2px 9px;
+  font-size:12.5px;display:flex;gap:6px;align-items:center}
+.tok button{all:unset;cursor:pointer;font-weight:700;padding:0 2px;line-height:1}
+.tabs{display:flex;gap:2px}
+.tabs button{all:unset;cursor:pointer;padding:5px 11px;border-radius:7px;color:var(--mute);font-size:12.5px}
+.tabs button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.sum{display:flex;gap:22px;flex-wrap:wrap;padding:12px 14px;background:var(--soft);border-bottom:1px solid var(--line)}
+.sum div{min-width:96px}
+.sum b{display:block;font-size:20px;font-weight:650;line-height:1.2;font-variant-numeric:tabular-nums}
+.sum span{color:var(--mute);font-size:11.5px}
+.toast{position:fixed;right:16px;bottom:38px;background:#1c1c22;color:#fff;padding:9px 14px;border-radius:8px;max-width:420px;
+  box-shadow:0 8px 28px rgba(0,0,0,.22);z-index:9;font-size:12.5px}
+.toast.bad{background:var(--hot)}
+@media (max-width:760px){
+  body{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
+  .side{flex-direction:row;flex-wrap:wrap;align-items:center;border-right:0;border-bottom:1px solid var(--side-line)}
+  .srch,.wscard,.nav .sec,.nav .grow,.nav .rule{display:none}
+  .nav{flex-direction:row;flex-wrap:wrap;overflow:visible}
+  .nav button{width:auto}
+  .form{grid-template-columns:1fr}.form .full{grid-column:1}
+}
+</style>
+</head>
+<body>
+<aside class="side" aria-label="Sections">
+  <div class="brand">
+    <span class="mark"><svg width="15" height="15" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="3" width="20" height="4" rx="1.4" fill="#fff"/><rect x="4" y="9" width="14" height="4" rx="1.4" fill="#fff" opacity=".75"/><rect x="7.5" y="15" width="7" height="4" rx="1.4" fill="#fff" opacity=".5"/></svg></span>
+    <span class="bname">Lead Studio</span><span class="ver" id="ver"></span>
+  </div>
+  <div class="srch"><label><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.6 10.6L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <input id="jumpq" type="text" placeholder="Search or jump to..." aria-label="Search or jump to"><kbd>Ctrl K</kbd></label></div>
+  <nav class="nav" id="side"></nav>
+  <div class="wscard"><span class="av" id="wsav">LS</span><span class="t"><b id="wsname">Workspace</b><span id="ws"></span></span></div>
+</aside>
+<div class="col">
+  <header class="topbar" id="topbar"></header>
+  <main id="main"></main>
+  <footer class="status" id="status"></footer>
+</div>
+<script>
+const T="__TOKEN__";
+let S={tools:[],jobs:[],hot:[],settings:{}},view=decodeURIComponent(location.hash.slice(1))||"today",curJob=null,timer=null,models=null;
+let L={path:"",file:null,q:"",offset:0};          // Leads page
+let E={input:"",cols:[],picked:[]};               // AI enrich page
+let C={f:{},open:null,cols:[],rows:[],offset:0,total:null,ms:0,busy:false,home:null,ran:false};   // Contacts search
+let O={tab:"manyreach",res:null};
+let B={};                                         // the mailbox being edited on Connections
+let MB=null;                                      // the mailboxes, fetched when a page needs them
+let MBN=25;                                       // how many of them Connections shows at once
+async function boxes(force){if(MB&&!force)return MB;const r=await get("/api/mailboxes");MB=r.mailboxes||[];return MB}                  // Outreach page
+let JT="leads";                                   // which tab of a job: leads or log
+const PAGE=200,CPAGE=50;
+const FDEF=[["country","Country","countries",1],["titles","Job titles","",0],["keywords","Keywords","",0],
+  ["industries","Industries","industries",0],["sizes","Company size","sizes",1],["location","Location","",0],
+  ["technologies","Technologies","technologies",0],["sources","Source","sources",1],["must","Must have","",2]];
+const MUST=[["named_person","A named person, not info@"],["business_email","Company email, not Gmail"],["name","Has a name"],
+  ["title","Has a job title"],["phone","Has a phone number"],["website","Has a website"],["company","Has a company name"],
+  ["industry","Has an industry"],["technology","Has known technology"]];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const get=(p,q={})=>fetch(p+"?"+new URLSearchParams({...q,t:T})).then(r=>r.json());
+const post=(p,b={})=>fetch(p,{method:"POST",body:JSON.stringify({...b,t:T})}).then(r=>r.json());
+const gname=g=>g.replace(/^\d+\.\s*/,"");
+function toast(msg,bad){const d=document.createElement("div");d.className="toast"+(bad?" bad":"");d.setAttribute("role","status");d.textContent=msg;document.body.append(d);setTimeout(()=>d.remove(),bad?7000:3200)}
+const PRESETS=[
+ ["What they sell","what_they_sell","In at most 8 words, say what this company sells and to whom."],
+ ["Industry","industry_ai","Name this company's industry in 1 to 3 words, for example: roofing contractor, dental clinic, Shopify apparel store."],
+ ["Fit for HYROS","fit_hyros","Score 0 to 3 how well this company fits ad-attribution software for businesses that spend on Meta or Google ads (3 = clearly sells online and runs paid ads, 0 = no fit). Reply as: score - reason in at most 8 words."],
+ ["Fit for QuoteIQ","fit_quoteiq","Score 0 to 3 how well this company fits quoting and scheduling software for home-service contractors (3 = a contractor that quotes jobs on site, 0 = no fit). Reply as: score - reason in at most 8 words."],
+ ["Opening line","opening_line","Write one plain, specific opening sentence for a first email to this company that refers to something in the record. No flattery, no exclamation marks, at most 20 words."],
+ ["Website language","site_language","Which language is this company's website written in? Reply with the language name only."]];
+
+/* ---------- chrome ---------- */
+async function refresh(){
+  try{S=await get("/api/state")}catch(e){return}
+  $("#ver").textContent=S.version;$("#ws").textContent=S.root;
+  const wn=(S.root||"Workspace").replace(/[\\/]+$/,"").split(/[\\/]/).pop()||"Workspace";
+  $("#wsname").textContent=wn;$("#wsav").textContent=wn.slice(0,2).toUpperCase();chrome();
+  const typing=["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName);
+  if(!typing&&(view==="jobs"||view.startsWith("g:")))render();
+}
+const IC={
+ today:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8.5l3.2 3.2L14 3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ contacts:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5.5" r="2.6"/><path d="M2.8 13.4c.6-2.6 2.7-3.9 5.2-3.9s4.6 1.3 5.2 3.9" stroke-linecap="round"/></svg>',
+ leads:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4.6c0-.8.6-1.4 1.4-1.4h2.4l1.4 1.6h5.4c.8 0 1.4.6 1.4 1.4v5.2c0 .8-.6 1.4-1.4 1.4H3.4C2.6 12.8 2 12.2 2 11.4z" stroke-linejoin="round"/></svg>',
+ enrich:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.5 3.8L13.4 7.3 9.5 8.8 8 12.6 6.5 8.8 2.6 7.3 6.5 5.8z" stroke-linejoin="round"/></svg>',
+ outreach:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3.6" width="12" height="8.8" rx="1.6"/><path d="M2.6 4.6L8 8.6l5.4-4" stroke-linecap="round"/></svg>',
+ jobs:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.6"/><path d="M8 4.8V8l2.2 1.6" stroke-linecap="round"/></svg>',
+ tool:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.4 2.6a3.4 3.4 0 00-4.3 4.3l-3.6 3.6a1.2 1.2 0 001.7 1.7l3.6-3.6a3.4 3.4 0 004.3-4.3L10.3 6.2 8.6 5.9 8.3 4.2z" stroke-linejoin="round"/></svg>',
+ gap:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.4"/><path d="M10.4 10.4L14 14" stroke-linecap="round"/><path d="M5.2 7h3.6" stroke-linecap="round"/></svg>',
+ web:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.8"/><path d="M2.4 8h11.2M8 2.2c1.6 1.7 2.4 3.6 2.4 5.8s-.8 4.1-2.4 5.8M8 2.2C6.4 3.9 5.6 5.8 5.6 8s.8 4.1 2.4 5.8" stroke-linecap="round"/></svg>',
+ conn:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.4 9.6l3.2-3.2" stroke-linecap="round"/><path d="M9 4.2l1.2-1.2a2.6 2.6 0 013.7 3.7L12.7 7.9M7 11.8l-1.2 1.2a2.6 2.6 0 01-3.7-3.7L3.3 8.1" stroke-linecap="round"/></svg>'};
+const SECT={today:["Workspace","Today"],contacts:["Your leads","Contacts"],leads:["Your leads","Files"],
+ enrich:["Reach them","AI enrich"],outreach:["Reach them","Outreach"],jobs:["Workspace","Jobs"],
+ log:["Workspace","Jobs"],conn:["Settings","Connections"],gaps:["Your leads","No contacts"],
+ web:["Your leads","Crawler"]};
+function chrome(){
+  const groups=[...new Set(S.tools.map(t=>t.group))].sort(),run=S.jobs.filter(j=>j.running).length;
+  const item=(k,n,icon,badge,cls)=>`<button class="${view===k||(k==="jobs"&&view==="log")?"on":""} ${cls||""}" data-v="${esc(k)}">`
+    +(IC[icon]||IC.tool)+`<span>${esc(n)}</span>${badge?`<span class="n">${badge}</span>`:""}</button>`;
+  if(window.sideNav)$("#side").innerHTML=sideNav(item,groups,gname,run);else $("#side").innerHTML=item("today","Today","today")+item("jobs","Jobs","jobs",run||"")
+    +`<div class="sec">Your leads</div>`+item("contacts","Contacts","contacts")+item("gaps","No contacts","gap")
+    +item("web","Crawler","web")+item("leads","Files","leads")
+    +`<div class="sec">Reach them</div>`+item("enrich","AI enrich","enrich")+item("outreach","Outreach","outreach")
+    +`<div class="sec">Pipeline</div>`+groups.map(g=>item("g:"+g,gname(g),"tool",S.tools.filter(t=>t.group===g).length)).join("")
+    +`<div class="grow"></div><div class="rule"></div>`+item("conn","Connections","conn");
+  $$("#side button[data-v]").forEach(b=>b.onclick=()=>go(b.dataset.v));
+  const sec=SECT[view]||["Tools",view.startsWith("g:")?gname(view.slice(2)):view];
+  $("#topbar").innerHTML=`<div class="crumbs"><span class="c">Lead Studio</span><span class="sepr">/</span>`
+    +`<span class="c">${esc(sec[0])}</span><span class="sepr">/</span><span class="c on">${esc(sec[1])}</span></div>`
+    +`<div class="right"><i class="dot ${run?"run":"ok"}"></i>${run?esc(run+" running"):"Idle"}<span class="p" id="ws2"></span></div>`;
+  if(S.root)$("#ws2").textContent=S.root;
+  const st=S.settings||{};
+  $("#status").innerHTML=`<button data-v="jobs"><i class="dot ${run?"run":""}"></i>${run?run+" job"+(run>1?"s":"")+" running":"No jobs running"}</button>`
+    +`<span><i class="dot ${S.python?"ok":"bad"}"></i>${S.python?"Python ready":"Python not found"}</span>`
+    +`<button data-v="conn"><i class="dot ${st.ollama_has_key?"ok":""}"></i>Ollama ${st.ollama_has_key?esc(st.ollama_model||"connected, no model chosen"):"not connected"}</button>`
+    +`<button data-v="contacts"><i class="dot ${C.home&&C.home.info?"ok":""}"></i>${C.home&&C.home.info?nfmt(C.home.info.contacts)+" contacts indexed":"Contact database"}</button>`
+    +`<button data-v="campaigns"><i class="dot ${st.wa_has_key||st.postiz_has_key||st.mr_has_key?"ok":""}"></i>Outreach</button>`
+    +`<button data-v="conn"><i class="dot ok"></i>MCP ready</button>`;
+  $$("#status button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+}
+
+function navTargets(){
+  const t=[["today","Today"],["jobs","Jobs"],["campaigns","Campaigns"],["contacts","Contacts"],["senders","Senders"],["unibox","Unibox"],
+    ["whatsapp","WhatsApp messages"],["q:linkedin","LinkedIn"],["q:instagram","Instagram"],["q:youtube","YouTube"],["q:twitter","X Twitter"],
+    ["q:forms","Contact forms"],["leads","Files"],["enrich","AI enrich"],["web","Crawler"],["gaps","No contacts"],["video","Video maker"],
+    ["agile","Agile Assets"],["posts","Social posts"],["seo","Article library SEO"],["seoideas","Idea generator"],["seomodels","Ollama models"],
+    ["ads","Ads connectors HYROS"],["conn","Connections"]];
+  S.tools.forEach(x=>{if(!t.some(y=>y[0]==="g:"+x.group))t.push(["g:"+x.group,gname(x.group)])});
+  return t}
+document.addEventListener("keydown",e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#jumpq").focus();$("#jumpq").select()}
+});
+document.addEventListener("DOMContentLoaded",()=>{
+  const q=$("#jumpq");if(!q)return;
+  q.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){q.value="";q.blur();return}
+    if(e.key!=="Enter")return;
+    const s=q.value.trim().toLowerCase();if(!s)return;
+    const hit=navTargets().find(t=>t[1].toLowerCase().includes(s));
+    if(hit){q.value="";q.blur();go(hit[0])}else toast("Nothing called \""+q.value.trim()+"\"",true)});
+});
+function go(v){view=v;clearInterval(timer);history.replaceState(null,"","#"+encodeURIComponent(v==="log"?"jobs":v));chrome();render()}
+function render(){
+  if(view==="outreach")view="campaigns";
+  if(window.PLUS){if(view.startsWith("q:"))return PLUS.queue(view.slice(2));if(PLUS[view])return PLUS[view]()}
+  if(view==="campaigns"||view==="whatsapp"||view==="posts")return outreach();
+  if(view==="senders")return conn();
+  if(view==="today")return today();if(view==="contacts")return contacts();if(view==="leads")return leads();
+  if(view==="enrich")return enrich();if(view==="outreach")return outreach();
+  if(view==="jobs"||(view==="log"&&!curJob))return jobs();
+  if(view==="log")return JT==="log"?log(curJob):jleads(curJob);
+  if(view==="gaps")return gaps();
+  if(view==="web")return web();
+  if(view==="conn")return conn();
+  return group(view.slice(2));
+}
+const CT=c=>{c=String(c).toLowerCase();
+  if(/mail/.test(c))return"@";if(/phone|tel|mobile/.test(c))return"#";
+  if(/url|site|web|link|domain|page/.test(c))return"/";
+  if(/count|size|score|rows|num|year|employees|total|pct|%/.test(c))return"#";
+  if(/date|day|time|built|changed|seen/.test(c))return"D";return"T"};
+function grid(cols,rows,start=0,heat=-1,wrap=[]){
+  const fill=cols.map((c,k)=>rows.length?Math.round(100*rows.filter(r=>String(r[k]??"").trim()!=="").length/rows.length):0);
+  return `<table class="grid"><thead><tr><th class="rn">#</th>`
+   +cols.map(c=>`<th><span class="h"><i>${CT(c)}</i><b>${esc(c)}</b><u>&#9662;</u></span></th>`).join("")
+   +`</tr></thead><tbody><tr class="fill"><td class="rn"></td>`
+   +fill.map(p=>`<td>${p}%</td>`).join("")+`</tr>`
+   +rows.map((r,i)=>`<tr><td class="rn">${start+i+1}</td>${cols.map((c,k)=>`<td class="${k===heat?esc(r[k]):""}${wrap.includes(k)?" wrap":""}" title="${esc(r[k])}">${esc(r[k])}</td>`).join("")}</tr>`).join("")
+   +`</tbody></table>`;
+}
+
+/* ---------- Today ---------- */
+const DAILY_SCRIPTS=[
+  {id:"job_signals_daily",name:"Hiring signals: daily match",script:"job_signals.py",args:"daily",group:"Hiring signals",desc:"Pulls last few days of job postings, matches against your offers, enriches with hiring difficulty, writes ready-to-send CSV per offer.",output:"JOBS/matches"},
+  {id:"job_signals_offers",name:"Hiring signals: offer rules",script:"job_signals.py",args:"offers",group:"Hiring signals",desc:"Shows which job titles each offer catches and the cold-email angle. Edit JOBS/offer_rules.json to tune.",output:"JOBS/offer_rules.json"},
+  {id:"job_signals_match",name:"Hiring signals: re-match cached",script:"job_signals.py",args:"match",group:"Hiring signals",desc:"Re-runs offer rules over already downloaded postings. No network, instant. Run after editing offer_rules.json.",output:"JOBS"},
+  {id:"job_signals_status",name:"Hiring signals: status",script:"job_signals.py",args:"status",group:"Hiring signals",desc:"What is on disk, how many postings pitched, age of company table, recent runs.",output:"JOBS"},
+  {id:"nrd_daily",name:"New domains: daily download",script:"nrd_feed.py",args:"daily",group:"New domains",desc:"Downloads today's newly registered domains from smet.cz, merges, de-duplicates, cuts slices: new .sk/.cz, manufacturing, gates, ERP/SaaS.",output:"NRD/out"},
+  {id:"nrd_status",name:"New domains: status",script:"nrd_feed.py",args:"status",group:"New domains",desc:"What is on disk, how big the seen-domain index is, per-day counts from recent runs.",output:"NRD"},
+  {id:"nrd_slice",name:"New domains: re-cut slices",script:"nrd_feed.py",args:"slice",group:"New domains",desc:"Re-runs TLD and keyword filters over newest day already downloaded. No network, instant. Run after editing NRD/config.json.",output:"NRD/out"},
+  {id:"nrd_sources",name:"New domains: check sources",script:"nrd_feed.py",args:"sources",group:"New domains",desc:"Shows which domain feeds are switched on and whether domainkits API key is in place.",output:"NRD"},
+  {id:"signal_monitor_daily",name:"Daily buying-signal monitor",script:"signal_monitor.py",args:"daily",group:"Signals",desc:"New lookalike domains, re-scan of watched sites, decision-maker finder, hot list for today.",output:"SIGNALS/HOT_TODAY"},
+  {id:"signal_monitor_patterns",name:"Learn email patterns",script:"signal_monitor.py",args:"patterns",group:"Signals",desc:"Reads 38M master contacts and learns each watched company's email pattern. Run once, 10-15 minutes.",output:"SIGNALS/patterns"},
+  {id:"signal_monitor_lookalikes",name:"Lookalike domains only",script:"signal_monitor.py",args:"lookalikes",group:"Signals",desc:"Checks newest daily update zip against SIGNALS/brands.csv.",output:"SIGNALS"},
+  {id:"signal_watch_sweep",name:"Lookalike sweep (dnstwist)",script:"signal_watch.py",args:"sweep 60",group:"Signals",desc:"Builds plausible fakes of your brands, checks which are registered. Rotates through brands.csv, 60 brands per run.",output:"SIGNALS"},
+  {id:"signal_watch_certstream",name:"Live certificate watch",script:"signal_watch.py",args:"certstream 0",group:"Signals",desc:"Listens to every TLS certificate issued anywhere, flags domains that look like your brands. Earliest warning.",output:"SIGNALS"},
+  {id:"signal_watch_crtsh",name:"Certificate history (crt.sh)",script:"signal_watch.py",args:"crtsh 40",group:"Signals",desc:"Asks crt.sh which certificates exist for each brand. Catches backlog the live watch missed.",output:"SIGNALS"},
+  {id:"signal_watch_status",name:"Lookalike watch status",script:"signal_watch.py",args:"status",group:"Signals",desc:"How many brands swept, what was found, how many fakes have mail servers.",output:"SIGNALS"},
+  {id:"pipeline_run",name:"Pipeline: run all",script:"daily_pipeline.py",args:"run",group:"Pipeline",desc:"Full chain: new domains -> fraud listings -> Red Points cases -> cross-check. Ends with handoff files.",output:""},
+  {id:"pipeline_with_jobs",name:"Pipeline: run + hiring signals",script:"daily_pipeline.py",args:"run --with-jobs",group:"Pipeline",desc:"Same chain plus affiliate hiring-signal match. Separate workstream, off by default.",output:""},
+  {id:"pipeline_report",name:"Pipeline: last report",script:"daily_pipeline.py",args:"report",group:"Pipeline",desc:"Re-prints latest run: which stages succeeded, day's counts, where handoff files are.",output:""},
+  {id:"pipeline_stages",name:"Pipeline: stages",script:"daily_pipeline.py",args:"stages",group:"Pipeline",desc:"Stage order, which are on, whether each script is present.",output:""},
+  {id:"pipeline_schedule",name:"Pipeline: run every morning",script:"daily_pipeline.py",args:"schedule 07:15",group:"Pipeline",desc:"One Windows task at 07:15 for whole chain. Replaces three separate morning tasks.",output:""}
+];
+let TD={activeSheet:null,results:{},lastRun:{}};
+async function loadTodayResults(){
+  try{
+    const r=await get("/api/today/load",{id:"_all"});
+    if(r&&typeof r==="object"&&!r.error){
+      for(const[sid,data]of Object.entries(r)){
+        TD.results[sid]=data;
+        TD.lastRun[sid]=data.saved_at?new Date(data.saved_at).toLocaleString():"";
+      }
+    }
+  }catch(e){}
+}
+async function today(sheetId){
+  if(Object.keys(TD.results).length===0)await loadTodayResults();
+  const m=$("#main");
+  if(!sheetId)sheetId=TD.activeSheet||"hotlist";
+  TD.activeSheet=sheetId;
+  const groups=[...new Set(DAILY_SCRIPTS.map(s=>s.group))];
+  const grps=groups.map(g=>({name:g,scripts:DAILY_SCRIPTS.filter(s=>s.group===g)}));
+  if(sheetId==="hotlist"){
+    const file=S.hot[0];
+    if(!file){m.innerHTML=`<div class="bar"><h1>Today</h1></div><div class="body"><div class="empty"><b>No hot list yet</b>Run "Daily buying-signal monitor" to generate today's hot list.</div></div>`;return}
+    const path="_CLEAN_2026-11-02/SIGNALS/HOT_TODAY/"+file,d=await get("/api/table",{path,limit:500});
+    const want=["heat","offer","signal","reason","first_email_question","email","first_name","title","email_confidence","company","domain","evidence"];
+    const ix=want.map(c=>d.cols.indexOf(c)).filter(i=>i>=0);
+    const cols=ix.map(i=>d.cols[i].replace(/_/g," ")),rows=d.rows.map(r=>ix.map(i=>r[i]));
+    m.innerHTML=`<div class="bar"><h1>Today</h1><select id="hf" aria-label="Day">${S.hot.map(f=>`<option ${f===file?"selected":""}>${esc(f)}</option>`).join("")}</select>
+     <input type="text" id="hq" placeholder="Filter: HOT, QUOTEIQ, a domain" value="" aria-label="Filter" style="width:240px">
+     <span class="tag">${d.total} companies</span><span class="sp"></span><button class="btn" id="he">Enrich with AI</button><button class="btn" id="ho">Open folder</button></div>
+     <div class="body flush"><div class="gridwrap">${rows.length?grid(cols,rows,0,0,[cols.indexOf("first email question"),cols.indexOf("reason")]):`<div class="empty"><b>Nothing matches</b>Clear the filter to see the whole list.</div>`}</div></div>`;
+    $("#hf").onchange=e=>today("hotlist");$("#hq").onchange=e=>today("hotlist");
+    $("#ho").onclick=()=>post("/api/open",{path});$("#he").onclick=()=>{E={input:path,cols:[],picked:[]};go("enrich")};
+    return}
+  const script=DAILY_SCRIPTS.find(s=>s.id===sheetId);
+  if(script){
+    const lastRun=TD.lastRun[script.id]||null;
+    const r=S.jobs.find(j=>j.tool===script.id&&j.running);
+    const res=TD.results[script.id]||null;
+    m.innerHTML=`<div class="bar"><h1>${esc(script.name)}</h1><span class="note">${esc(script.desc)}</span></div>
+     <div class="body">
+      <section class="box">
+       <h3>Run this script</h3>
+       <p><b>Script:</b> ${esc(script.script)} <b>Arguments:</b> <code>${esc(script.args)}</code></p>
+       <p><b>Output folder:</b> ${esc(script.output||"None specified")}</p>
+       ${lastRun?`<p><b>Last run:</b> ${esc(lastRun)}</p>`:""}
+       ${r?`<button class="btn" data-log="${r.id}">Show log (running)</button>`:`<button class="btn go" id="trun">Run now</button>`}
+       ${res?`<button class="btn" id="tload">Load last result</button>`:""}
+      </section>
+      ${res?`<section class="box"><h3>Last result</h3><div class="gridwrap">${grid(res.cols,res.rows,0,-1,[])}</div></section>`:""}
+     </div>`;
+    if($("#trun"))$("#trun").onclick=async()=>{
+      const r=await post("/api/run",{tool:script.id,args:script.args});
+      if(r.error)return toast(r.error,true);
+      curJob=r.job;JT="log";await refresh();go("log")};
+    if($("#tload"))$("#tload").onclick=()=>loadResult(script.id);
+    $$("[data-log]").forEach(b=>b.onclick=()=>{curJob=b.dataset.log;JT="log";go("log")});
+    return}
+  m.innerHTML=`<div class="bar"><h1>Today</h1><span class="note">Daily scripts for lead generation and monitoring</span></div>
+   <div class="body">
+    <section class="box">
+     <h3>Hot List</h3>
+     <p>Today's buying-signal hot list from signal monitor.</p>
+     <button class="btn go" data-sheet="hotlist">View hot list</button>
+    </section>
+    ${grps.map(g=>`<section class="box"><h3>${esc(g.name)}</h3>
+     <div class="tools">${g.scripts.map(s=>{
+       const r=S.jobs.find(j=>j.tool===s.id&&j.running);
+       const last=TD.lastRun[s.id]||null;
+       return `<div class="tool" data-sheet="${esc(s.id)}">
+        <h3>${esc(s.name)}${r?'<span class="tag run">running</span>':""}${last?`<small style="color:var(--mute)">Last: ${esc(last)}</small>`:""}</h3>
+        <p>${esc(s.desc)}</p>
+        <button class="btn" data-run="${esc(s.id)}" ${r?"disabled":""}>Run</button>
+        ${TD.results[s.id]?`<button class="btn" data-load="${esc(s.id)}">View result</button>`:""}
+       </div>`}).join("")}</div></section>`).join("")}
+   </div>`;
+  $$("[data-sheet]").forEach(b=>b.onclick=()=>today(b.dataset.sheet));
+  $$("[data-run]").forEach(b=>b.onclick=async()=>{
+    const s=DAILY_SCRIPTS.find(x=>x.id===b.dataset.run);
+    const r=await post("/api/run",{tool:s.id,args:s.args});
+    if(r.error)return toast(r.error,true);
+    curJob=r.job;JT="log";await refresh();go("log")});
+  $$("[data-load]").forEach(b=>b.onclick=()=>loadResult(b.dataset.load));
+}
+async function loadResult(scriptId){
+  const script=DAILY_SCRIPTS.find(s=>s.id===scriptId);
+  if(!script||!script.output)return toast("No output folder configured",true);
+  const d=await get("/api/table",{path:script.output,limit:200});
+  if(d.error){toast(d.error,true);return}
+  TD.results[scriptId]={cols:d.cols,rows:d.rows,total:d.total};
+  TD.lastRun[scriptId]=new Date().toLocaleString();
+  await post("/api/today/save",{id:scriptId,cols:d.cols,rows:d.rows,total:d.total});
+  TD.activeSheet=scriptId;
+  today(scriptId);
+}
+
+/* ---------- Contacts: search the whole database ---------- */
+const fval=k=>C.f[k]||(C.f[k]=[]);
+const fspec=()=>Object.fromEntries(Object.entries(C.f).filter(([k,v])=>v.length));
+const nfmt=n=>Number(n||0).toLocaleString();
+async function contacts(){
+  const m=$("#main");
+  if(!C.home){m.innerHTML=`<div class="bar"><h1>Contacts</h1><span class="note">Reading the database</span></div><div class="body"></div>`;C.home=await get("/api/leads/home")}
+  const info=C.home.info,fac=C.home.facets||{};
+  if(!info){const j=S.jobs.find(x=>x.tool==="lead_index_build"&&x.running);
+    m.innerHTML=`<div class="bar"><h1>Contacts</h1></div><div class="body"><div class="empty"><b>The contact database has not been built yet</b>
+     It reads every lead file in the workspace - the master contact parts, the crawled sites, the Klaviyo stores, Crustdata, the site scan and the OpenStreetMap results - and combines them into one searchable store with the companies joined in by domain. On a folder your size it runs for a while; you can close this page and come back.
+     <div style="margin-top:14px">${j?`<button class="btn" data-log="${j.id}">It is running - follow it</button>`:`<button class="btn go" id="cb">Build it now</button>`}</div></div></div>`;
+    if($("#cb"))$("#cb").onclick=async()=>{const r=await post("/api/leads/build");if(r.error)return toast(r.error,true);curJob=r.job;JT="log";await refresh();go("log")};
+    $$("[data-log]").forEach(b=>b.onclick=()=>{curJob=b.dataset.log;JT="log";go("log")});return}
+  const chips=FDEF.map(([k,label])=>{const n=fval(k).length;
+    return `<button class="chip ${n?"set":""} ${C.open===k?"open":""}" data-chip="${k}">${esc(label)}${n?`<span class="k">${n}</span>`:""}</button>`}).join("")
+    +(Object.values(C.f).some(v=>v.length)?`<button class="chip" id="cclear">Clear all</button>`:"");
+  let pan="";
+  if(C.open){const [k,label,facet,kind]=FDEF.find(d=>d[0]===C.open);const sel=fval(k);
+    const opts=kind===2?MUST:(fac[facet]||[]).map(([v,n])=>[v,v,n]);
+    pan=`<div class="panel"><h3>${esc(label)}</h3>
+     ${sel.length?`<div class="toks">${sel.map(v=>`<span class="tok">${esc(kind===2?(MUST.find(x=>x[0]===v)||[0,v])[1]:v)}<button data-del="${esc(v)}" aria-label="Remove">x</button></span>`).join("")}</div>`:""}
+     ${kind?"":`<div class="row"><input type="text" id="cin" placeholder="${k==="keywords"?"A word in the company name, description, industry, technology or website":k==="titles"?"CEO, Founder, Marketing Manager - any part of a job title":"Type a value and press Enter; several are allowed"}" autofocus><button class="btn" id="cadd">Add</button></div>`}
+     ${opts.length?`<div class="sugg">${opts.slice(0,160).map(o=>{const v=o[0],t=o.length>2?o[1]:o[1],n=o.length>2?o[2]:null;
+        return `<button class="${sel.includes(v)?"on":""}" data-add="${esc(v)}">${esc(t)}${n!=null?`<span class="c">${nfmt(n)}</span>`:""}</button>`}).join("")}</div>`
+      :`<small style="color:var(--mute)">${kind?"Nothing to choose from in the database yet.":"Any text works here - it is matched inside the field."}</small>`}
+     </div>`}
+  const cnt=C.total==null?"":`${nfmt(C.total)} contacts match`;
+  m.innerHTML=`<div class="bar"><h1>Contacts</h1>
+    <span class="note">${nfmt(info.contacts)} contacts at ${nfmt(info.companies)} companies, built ${esc(info.built)}</span>
+    <span class="sp"></span>${C.total!=null?`<span class="tag ok">${cnt}</span>`:""}
+    <button class="btn" id="cexc" ${C.ran?"":"disabled"}>Export CSV</button><button class="btn" id="cexj" ${C.ran?"":"disabled"}>Export JSON</button>
+    <button class="btn" id="casdr" ${C.ran?"":"disabled"}>Prepare for AgentSDR</button>
+    <button class="btn" id="cimp">Import contacts</button>
+    <input type="file" id="cfile" multiple hidden accept=".csv,.tsv,.txt,.xlsx,.xls,.json,.jsonl,.ndjson,.parquet">
+    <button class="btn go" id="crun">${C.busy?"Searching":"Search"}</button></div>
+   <div class="chips">${chips}</div>${pan}
+   <div class="body flush">${C.busy?`<div class="empty"><b>Searching the database</b>A few seconds on a large store.</div>`
+    :C.rows.length?`<div class="gridwrap">${grid(C.cols.map(c=>c.replace(/_/g," ")),C.rows,C.offset,-1,[C.cols.indexOf("technologies")])}</div>
+      <div class="bar"><span class="note">${nfmt(C.offset+1)} to ${nfmt(C.offset+C.rows.length)}${C.total!=null?" of "+nfmt(C.total):""} &middot; ${C.ms} ms</span><span class="sp"></span>
+       <button class="btn" id="cp" ${C.offset?"":"disabled"}>Previous</button><button class="btn" id="cn" ${C.more?"":"disabled"}>Next</button></div>`
+    :C.ran?`<div class="empty"><b>Nothing matches these filters</b>Loosen one of them - "Must have" and several technologies at once are the usual reason.</div>`
+    :`<div class="empty"><b>Pick your filters, then press Search</b>Country, job title, keyword, industry, company size, location, technology. The counts next to each value are how many contacts in the database have it. ${nfmt(info.with_title)} contacts have a job title, ${nfmt(info.with_technology)} have known technology, ${nfmt(info.with_phone)} have a phone number.<br><br>To add contacts, drop a CSV, XLSX, JSON or Parquet file anywhere on this page (or press Import contacts). New contacts are added; for an email or website already in the database only the empty fields are filled in.</div>`}</div>`;
+  $$("[data-chip]").forEach(b=>b.onclick=()=>{C.open=C.open===b.dataset.chip?null:b.dataset.chip;contacts()});
+  $$("[data-add]").forEach(b=>b.onclick=()=>{const v=b.dataset.add,s=fval(C.open);const i=s.indexOf(v);i<0?s.push(v):s.splice(i,1);contacts()});
+  $$("[data-del]").forEach(b=>b.onclick=()=>{const s=fval(C.open);s.splice(s.indexOf(b.dataset.del),1);contacts()});
+  if($("#cclear"))$("#cclear").onclick=()=>{C.f={};C.total=null;C.rows=[];C.ran=false;contacts()};
+  const add=()=>{const el=$("#cin");if(!el)return;el.value.split(",").map(x=>x.trim()).filter(Boolean).forEach(v=>{if(!fval(C.open).includes(v))fval(C.open).push(v)});el.value="";contacts()};
+  if($("#cin")){$("#cin").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();add()}};$("#cadd").onclick=add}
+  $("#crun").onclick=()=>csearch(0);
+  if($("#cp"))$("#cp").onclick=()=>csearch(Math.max(0,C.offset-CPAGE));
+  if($("#cn"))$("#cn").onclick=()=>csearch(C.offset+CPAGE);
+  const ex=async fmt=>{const r=await post("/api/leads/export",{...fspec(),format:fmt,limit:2000000,name:"search"});
+    if(r.error)return toast(r.error,true);toast("Writing "+r.file);curJob=r.job;JT="log";await refresh();go("log")};
+  $("#cexc").onclick=()=>ex("csv");$("#cexj").onclick=()=>ex("json");
+  $("#casdr").onclick=async()=>{const r=await post("/api/agentsdr",{action:"prepare",...fspec(),limit:200000,name:"search"});
+    if(r.error)return toast(r.error,true);toast("Writing import files into AGENTSDR_IMPORT");curJob=r.job;JT="leads";await refresh();go("log")};
+  if($("#cimp"))$("#cimp").onclick=()=>$("#cfile").click();
+  if($("#cfile"))$("#cfile").onchange=()=>cimport($("#cfile").files);
+  const mm=$("#main");
+  mm.ondragover=e=>{if(!$("#cfile"))return;e.preventDefault();mm.style.outline="2px dashed var(--go, #3ba776)";mm.style.outlineOffset="-6px"};
+  mm.ondragleave=()=>{mm.style.outline=""};
+  mm.ondrop=e=>{if(!$("#cfile"))return;e.preventDefault();mm.style.outline="";cimport(e.dataTransfer.files)};
+}
+/* drop or pick contact files -> LEAD_INDEX/uploads -> ingest into leads.duckdb */
+async function cimport(list){
+  const files=[...list].filter(f=>/\.(csv|tsv|txt|xlsx|xls|json|jsonl|ndjson|parquet)$/i.test(f.name));
+  if(!files.length)return toast("CSV, TSV, XLSX, JSON or Parquet files only",true);
+  const paths=[];
+  for(const f of files){
+    toast("Uploading "+f.name+" ("+(f.size/1e6).toFixed(1)+" MB)");
+    let r; try{r=await fetch("/api/leads/upload?"+new URLSearchParams({name:f.name,t:T}),{method:"POST",body:f}).then(x=>x.json())}
+    catch(e){r={ok:false,error:String(e)}}
+    if(!r.ok){toast(r.error||"Upload failed",true);continue}
+    paths.push(r.path);
+  }
+  if(!paths.length)return;
+  const j=await post("/api/leads/import",{files:paths});
+  if(j.error)return toast(j.error,true);
+  toast(paths.length+(paths.length>1?" files":" file")+" uploaded - importing into the database");
+  C.home=null;curJob=j.job;JT="log";await refresh();go("log");
+}
+async function csearch(offset){
+  C.busy=true;C.offset=offset;C.open=null;C.ran=true;contacts();
+  const spec={...fspec(),limit:CPAGE,offset};
+  const [d,c]=await Promise.all([post("/api/leads/search",spec),offset?Promise.resolve(null):post("/api/leads/count",spec)]);
+  C.busy=false;
+  if(d.error){C.rows=[];toast(d.error,true)}else{C.cols=d.cols;C.rows=d.rows;C.more=d.more;C.ms=d.ms}
+  if(c&&!c.error)C.total=c.total;
+  contacts();
+}
+
+/* ---------- Leads ---------- */
+async function leads(){
+  const m=$("#main");
+  if(L.file)return leadFile();
+  const d=await get("/api/files",{path:L.path});
+  const parts=L.path?L.path.split("/"):[];
+  const places=[...new Set(S.tools.map(t=>t.output).filter(Boolean))].sort();
+  m.innerHTML=`<div class="bar"><h1>Leads</h1><div class="crumb"><button data-p="">Workspace</button>${parts.map((p,i)=>`<span>/</span><button data-p="${esc(parts.slice(0,i+1).join("/"))}">${esc(p)}</button>`).join("")}</div>
+   <span class="sp"></span><select id="jump" aria-label="Jump to a results folder"><option value="">Jump to results of a tool</option>${places.map(p=>`<option>${esc(p)}</option>`).join("")}</select>
+   <button class="btn" id="lo">Open in Explorer</button></div>
+   <div class="body flush"><div class="gridwrap">${d.items.length?`<table class="grid"><thead><tr><th>Name</th><th>Changed</th><th>Size</th></tr></thead><tbody>`+
+   d.items.map(f=>`<tr><td>${f.dir?`<a href="#" data-dir="${esc(f.name)}">${esc(f.name)}/</a>`:f.table?`<a href="#" data-file="${esc(f.name)}">${esc(f.name)}</a>`:esc(f.name)}</td><td>${f.when}</td><td style="text-align:right">${f.dir?"":f.kb>1024?(f.kb/1024).toFixed(1)+" MB":f.kb+" KB"}</td></tr>`).join("")+`</tbody></table>`
+   :`<div class="empty"><b>This folder is empty</b>Pick another folder, or run a tool that writes its results here.</div>`}</div></div>`;
+  const sub=n=>(L.path?L.path+"/":"")+n;
+  $$("[data-p]").forEach(b=>b.onclick=()=>{L={path:b.dataset.p,file:null,q:"",offset:0};leads()});
+  $$("[data-dir]").forEach(a=>a.onclick=e=>{e.preventDefault();L={path:sub(a.dataset.dir),file:null,q:"",offset:0};leads()});
+  $$("[data-file]").forEach(a=>a.onclick=e=>{e.preventDefault();L.file=sub(a.dataset.file);L.q="";L.offset=0;leads()});
+  $("#jump").onchange=e=>{if(e.target.value){L={path:e.target.value.replace(/^\.$/,""),file:null,q:"",offset:0};leads()}};
+  $("#lo").onclick=()=>post("/api/open",{path:L.path||"."});
+}
+async function leadFile(){
+  const m=$("#main"),name=L.file.split("/").pop();
+  m.innerHTML=`<div class="bar"><h1>${esc(name)}</h1><span class="note">Reading the file</span></div><div class="body"></div>`;
+  const d=await get("/api/table",{path:L.file,q:L.q,offset:L.offset,limit:PAGE});
+  const a=d.rows.length?L.offset+1:0,b=L.offset+d.rows.length;
+  m.innerHTML=`<div class="bar"><button class="btn" id="lb">Back to folder</button><h1>${esc(name)}</h1>
+    <input type="text" id="lq" placeholder="Filter rows" value="${esc(L.q)}" aria-label="Filter rows" style="width:220px">
+    <span class="tag">${a.toLocaleString()} to ${b.toLocaleString()} of ${d.counted?d.total.toLocaleString():"many"}</span>
+    <button class="btn" id="lp" ${L.offset?"":"disabled"}>Previous</button><button class="btn" id="ln" ${d.more?"":"disabled"}>Next</button>
+    <span class="sp"></span><button class="btn go" id="le">Enrich with AI</button><button class="btn" id="lo">Open folder</button></div>
+    <div class="body flush"><div class="gridwrap">${d.error?`<div class="empty"><b>This file could not be read</b>${esc(d.error)}</div>`:d.rows.length?grid(d.cols,d.rows,L.offset,d.cols.indexOf("heat")):`<div class="empty"><b>No rows match</b>Clear the filter to see every row.</div>`}</div></div>`;
+  $("#lb").onclick=()=>{L.file=null;leads()};$("#lq").onchange=e=>{L.q=e.target.value;L.offset=0;leadFile()};
+  $("#lp").onclick=()=>{L.offset=Math.max(0,L.offset-PAGE);leadFile()};$("#ln").onclick=()=>{L.offset+=PAGE;leadFile()};
+  $("#lo").onclick=()=>post("/api/open",{path:L.file});$("#le").onclick=()=>{E={input:L.file,cols:d.cols,picked:[]};go("enrich")};
+}
+
+/* ---------- AI enrich ---------- */
+async function enrich(){
+  const m=$("#main"),st=S.settings||{};
+  if(E.input&&!E.cols.length){const d=await get("/api/table",{path:E.input,limit:1});E.cols=d.cols||[]}
+  if(E.cols.length&&!E.picked.length)E.picked=E.cols.filter(c=>/^(company|domain|website|title|description|desc|categories|industry|technologies|subsegment|country|city|reason|signal|evidence|store_name|name)$/i.test(c)).slice(0,8);
+  if(st.ollama_has_key&&models===null){models=[];get("/api/ollama/models").then(r=>{models=r.models||[];if(view==="enrich")enrich()})}
+  const mlist=[...new Set([st.ollama_model,...(models||[])].filter(Boolean))];
+  m.innerHTML=`<div class="bar"><h1>AI enrich</h1><span class="note">Adds one AI-written column to a lead file through Ollama Cloud</span></div><div class="body">
+   ${st.ollama_has_key?"":`<section class="box"><h2>Connect Ollama first</h2><p>AI enrich needs an Ollama API key. It is free to create and takes a minute.</p><button class="btn go" data-v="conn">Open Connections</button></section>`}
+   <div class="form">
+    <label for="ei">Lead file</label><div><div style="display:flex;gap:6px"><input type="text" id="ei" value="${esc(E.input)}" placeholder="Pick a file on the Leads page" style="flex:1"><button class="btn" id="eb">Browse Leads</button></div><small>Path inside the workspace. The result is written next to it as a new file; the original is not changed.</small></div>
+    <label>Columns to send</label><div>${E.cols.length?`<div class="checks">${E.cols.map(c=>`<label><input type="checkbox" value="${esc(c)}" ${E.picked.includes(c)?"checked":""}>${esc(c)}</label>`).join("")}</div><small>Send only what the task needs. Fewer columns is faster and shares less.</small>`:`<small style="margin-top:6px">Choose a file to see its columns.</small>`}</div>
+    <label for="ep">Task</label><div><select id="ep"><option value="">Choose a ready-made task</option>${PRESETS.map((p,i)=>`<option value="${i}">${esc(p[0])}</option>`).join("")}</select></div>
+    <label for="et">Instruction</label><div><textarea id="et" placeholder="What should the AI work out for each row?"></textarea></div>
+    <label for="en">New column name</label><div><input type="text" id="en" value="ai_note" style="width:220px"></div>
+    <label for="el">Rows this run</label><div><input type="number" id="el" value="50" min="1" max="200000" style="width:110px"><small>Start small. Run it again later and it continues after the rows already done.</small></div>
+    <label for="em">Model</label><div><select id="em">${mlist.length?mlist.map(x=>`<option ${x===st.ollama_model?"selected":""}>${esc(x)}</option>`).join(""):`<option value="">No models loaded</option>`}</select></div>
+    <div class="full"><button class="btn go" id="eg" ${st.ollama_has_key?"":"disabled"}>Start enriching</button></div>
+    <p class="lead full">Rows are sent one at a time, because the free Ollama tier runs a single cloud model at once and its limits are not published. The rows you enrich leave this computer and go to Ollama's servers.</p>
+   </div></div>`;
+  $$("#main [data-v]").forEach(b=>b.onclick=()=>go(b.dataset.v));
+  $("#eb").onclick=()=>go("leads");
+  $("#ei").onchange=e=>{E={input:e.target.value.trim(),cols:[],picked:[]};enrich()};
+  $("#ep").onchange=e=>{const p=PRESETS[e.target.value];if(p){$("#en").value=p[1];$("#et").value=p[2]}};
+  $("#eg").onclick=async()=>{
+    const r=await post("/api/enrich",{input:$("#ei").value.trim(),columns:$$(".checks input:checked").map(c=>c.value),instruction:$("#et").value,new_column:$("#en").value,limit:$("#el").value,model:$("#em").value});
+    if(r.error)return toast(r.error,true);curJob=r.job;JT="leads";await refresh();go("log")};
+}
+
+/* ---------- Tools ---------- */
+const STEPNOTE={
+ "1. Every day":"Run these first thing. They tell you who moved overnight.",
+ "2. Find leads":"Where new domains and companies come from. Everything downstream starts here.",
+ "3. Enrich":"Turn a bare domain into a company with an address, a technology stack and a segment.",
+ "4. Clean and verify":"Throw away the dead addresses here, before you spend a paid verification on them.",
+ "5. Score and segment":"Decide who gets which offer, and cut the lists to size.",
+ "6. Write the emails":"One email per contact, per segment.",
+ "7. Upload and send":"Into Manyreach. Nothing leaves without you starting the campaign there.",
+ "8. Red Points":"The brand-protection side: who is imitating your clients' brands."};
+function group(g){
+  const ts=S.tools.filter(t=>t.group===g);
+  $("#main").innerHTML=`<div class="bar"><h1>${esc(gname(g))}</h1><span class="note">${esc(STEPNOTE[g]||"Each tool runs in the background and keeps a log")}</span><span class="sp"></span><button class="btn" id="rl">Rescan scripts</button></div>
+   <div class="body">${S.python?"":`<section class="box"><h2>Python was not found</h2><p>Install it from python.org, then restart Lead Studio. The tools are Python scripts and cannot run without it.</p></section>`}
+   <div class="tools">${ts.map(t=>{const r=S.jobs.find(j=>j.tool===t.id&&j.running),miss=t.missing||[];return `<div class="tool">
+     <div><h3>${esc(t.name)}${r?'<span class="tag run">running</span>':""}${t.exists?"":'<span class="tag bad">file missing</span>'}${miss.length?`<span class="tag bad">needs ${esc(miss.join(", "))}</span>`:""}</h3>
+      <p>${esc(t.desc)}</p><div class="file">${esc(t.dir)}/${esc(t.script)}</div></div>
+     <input type="text" id="a_${esc(t.id)}" value="${esc(t.args||"")}" placeholder="Arguments (optional)" aria-label="Arguments for ${esc(t.name)}">
+     <div class="acts">${miss.length?`<button class="btn" data-pip="${esc(miss.join(","))}">Install</button>`:""}${r?`<button class="btn" data-log="${r.id}">Show log</button>`:`<button class="btn go" data-run="${esc(t.id)}" ${t.exists?"":"disabled"}>Run</button>`}
+      ${t.output||t.dir?`<button class="btn" data-files="${esc(t.output||t.dir)}">Results</button>`:""}</div></div>`}).join("")||`<div class="empty"><b>No tools in this group</b>Add entries to lead_studio_tools.json, then press Rescan scripts.</div>`}</div></div>`;
+  $("#rl").onclick=async()=>{await post("/api/reload");await refresh();toast("Script list refreshed")};
+  $$("[data-run]").forEach(b=>b.onclick=async()=>{const t=S.tools.find(x=>x.id===b.dataset.run);if(t.confirm&&!confirm(t.confirm))return;
+    const r=await post("/api/run",{tool:t.id,args:$("#a_"+CSS.escape(t.id)).value});if(r.error)return toast(r.error,true);curJob=r.job;JT="leads";await refresh();go("log")});
+  $$("[data-log]").forEach(b=>b.onclick=()=>{curJob=b.dataset.log;JT="log";go("log")});
+  $$("[data-files]").forEach(b=>b.onclick=()=>{L={path:b.dataset.files.replace(/^\.$/,""),file:null,q:"",offset:0};go("leads")});
+  $$("[data-pip]").forEach(b=>b.onclick=async()=>{const r=await post("/api/pip",{mods:b.dataset.pip.split(",")});if(r.error)return toast(r.error,true);curJob=r.job;JT="log";await refresh();go("log")});
+}
+
+/* ---------- Jobs ---------- */
+function jobs(){
+  $("#main").innerHTML=`<div class="bar"><h1>Jobs</h1><span class="note">Everything started since Lead Studio was opened</span></div><div class="body flush"><div class="gridwrap">${S.jobs.length?
+   `<table class="grid jobs"><thead><tr><th>Job</th><th>Started</th><th>Minutes</th><th>State</th></tr></thead><tbody>${S.jobs.map(j=>`<tr data-log="${j.id}"><td>${esc(j.name)}</td><td>${j.started}</td><td style="text-align:right">${j.minutes}</td><td><span class="tag ${j.running?"run":j.code?"bad":"ok"}">${j.running?"running":j.code?"stopped or failed":"finished"}</span></td></tr>`).join("")}</tbody></table>`
+   :`<div class="empty"><b>Nothing has run yet</b>Start a tool from the Tools sections on the left. Its log appears here and is kept in the logs folder.</div>`}</div></div>`;
+  $$("[data-log]").forEach(r=>r.onclick=()=>{curJob=r.dataset.log;JT="leads";go("log")});
+}
+function jobhead(id,title){
+  return `<div class="bar"><button class="btn" id="back">All jobs</button><h1 id="lt">${esc(title)}</h1><span class="tag" id="ls"></span>
+   <span class="sp"></span><div class="tabs"><button class="${JT==="leads"?"on":""}" data-tab="leads">New leads</button><button class="${JT==="log"?"on":""}" data-tab="log">Log</button></div>
+   <button class="btn stop" id="stop">Stop</button></div>`;
+}
+function jobtabs(id){
+  $("#back").onclick=()=>go("jobs");$("#stop").onclick=()=>post("/api/stop",{id});
+  $$("[data-tab]").forEach(b=>b.onclick=()=>{JT=b.dataset.tab;clearInterval(timer);JT==="log"?log(id):jleads(id)});
+}
+async function jleads(id){
+  const m=$("#main");
+  m.innerHTML=jobhead(id,"Results")+`<div class="body"><div class="empty">Looking at what this job wrote</div></div>`;jobtabs(id);
+  const tick=async()=>{
+    if(view!=="log"||JT!=="leads")return clearInterval(timer);
+    const v=await get("/api/job/leads",{id}),p=v.files?.length?await get("/api/job/preview",{id}):{cols:[],rows:[]};
+    if(view!=="log"||JT!=="leads")return;
+    m.innerHTML=jobhead(id,v.name||"Results")
+     +`<div class="sum"><div><b>${nfmt(v.rows)}</b><span>rows written</span></div><div><b>${nfmt(v.emails)}</b><span>email addresses</span></div>
+       <div><b>${v.has_index?nfmt(v.new):"-"}</b><span>${v.has_index?"new to your database":"database not built"}</span></div>
+       <div><b>${nfmt(v.files.length)}</b><span>file${v.files.length===1?"":"s"}</span></div></div>
+      <div class="body flush">${v.files.length?`<div class="gridwrap">
+        <table class="grid"><thead><tr><th>File</th><th>Rows</th><th>Emails</th><th>New</th><th></th></tr></thead><tbody>
+        ${v.files.map(f=>`<tr><td title="${esc(f.path)}">${esc(f.path)}</td><td style="text-align:right">${nfmt(f.rows)}</td><td style="text-align:right">${nfmt(f.emails)}</td>
+          <td style="text-align:right">${f.new==null?"-":nfmt(f.new)}</td><td><a href="#" data-open="${esc(f.path)}">open</a></td></tr>`).join("")}</tbody></table>
+        ${p.rows.length?`<div class="bar"><h1 style="font-size:14px">${esc((p.file||"").split("/").pop())}</h1><span class="note">first ${p.rows.length} of ${nfmt(p.total)} rows</span></div>
+          ${grid(p.cols,p.rows,0)}`:""}</div>`
+       :`<div class="empty"><b>${v.running?"Nothing written yet":"This job wrote no lead files"}</b>${v.running?"The job is still working. This page updates itself.":esc(v.note||v.error||"It may only have printed to its log - open the Log tab.")}</div>`}</div>`;
+    jobtabs(id);
+    $$("[data-open]").forEach(a=>a.onclick=e=>{e.preventDefault();L={path:a.dataset.open.split("/").slice(0,-1).join("/"),file:a.dataset.open,q:"",offset:0};go("leads")});
+    const j=S.jobs.find(x=>x.id===id);
+    $("#ls").textContent=v.running?"running":"finished";$("#ls").className="tag "+(v.running?"run":"ok");$("#stop").disabled=!v.running;
+    if(!v.running){clearInterval(timer);refresh()}};
+  clearInterval(timer);await tick();timer=setInterval(tick,6000);
+}
+async function log(id){
+  $("#main").innerHTML=jobhead(id,"Log")+`<div class="body flush"><pre class="log" id="lg" tabindex="0"></pre></div>`;jobtabs(id);
+  const tick=async()=>{const r=await get("/api/log",{id}),p=$("#lg");if(!p)return clearInterval(timer);
+    const stick=p.scrollTop+p.clientHeight>=p.scrollHeight-40;p.textContent=r.log;if(stick)p.scrollTop=p.scrollHeight;
+    if(!r.job){$("#ls").textContent="from an earlier session";$("#stop").disabled=true;return clearInterval(timer)}
+    $("#lt").textContent=r.job.name;$("#ls").textContent=r.job.running?"running, "+r.job.minutes+" min":(r.job.code?"stopped or failed":"finished")+" after "+r.job.minutes+" min";
+    $("#ls").className="tag "+(r.job.running?"run":r.job.code?"bad":"ok");$("#stop").disabled=!r.job.running;
+    if(!r.job.running){clearInterval(timer);refresh();if(C.home&&r.job.tool==="lead_index_build")C.home=null}};
+  clearInterval(timer);await tick();timer=setInterval(tick,1500);
+}
+
+/* ---------- Outreach: WhatsApp, social posts, threads ---------- */
+async function outreach(){
+  const ALW={campaigns:["manyreach","mailbox","agentsdr"],whatsapp:["whatsapp"],posts:["social","thread"]}[view]||null;
+  if(ALW&&!ALW.includes(O.tab))O={...O,tab:ALW[0],res:null};
+  const m=$("#main"),st=S.settings||{},tab=O.tab;
+  const res=O.res?`<pre class="code" style="margin-top:12px">${esc(JSON.stringify(O.res,null,1))}</pre>`:"";
+  const TABS=[["manyreach","Manyreach"],["mailbox","My mailboxes"],["agentsdr","AgentSDR"],
+              ["whatsapp","WhatsApp"],["social","Social post"],["thread","Read a thread"]].filter(t=>!ALW||ALW.includes(t[0]));
+  const TITLE={campaigns:"Campaigns",whatsapp:"WhatsApp messages",posts:"Social posts"}[view]||"Outreach";
+  const head=`<div class="bar"><h1>${TITLE}</h1><span class="note">${view==="campaigns"?"Send from Manyreach, from your own mailboxes or AgentSDR":view==="whatsapp"?"One message at a time through OpenWA":"Post to your channels through Postiz"}</span>
+    <span class="sp"></span><div class="tabs">${TABS.map(([k,n])=>`<button class="${tab===k?"on":""}" data-tab="${k}">${n}</button>`).join("")}</div></div>`;
+  const fileopts=(id)=>O.files?.length?`<select id="${id}" style="width:100%">${O.files.map(f=>`<option>${esc(f)}</option>`).join("")}</select>`
+    :`<small>No CSV in AGENTSDR_IMPORT yet - prepare a list on the Contacts page, or type a path below.</small>`;
+  let body="";
+
+  if(tab==="manyreach")body=`<section class="box"><h2>Send leads into a Manyreach campaign</h2>
+    <p>Manyreach holds your warmed senders, the sequence and the replies; Lead Studio only decides who goes in.
+    ${st.mr_has_key?`The key is saved (${esc(st.mr_base||"")}).`:`<b>No API key yet.</b> Manyreach > Account Settings > API, then paste it under Connections.`}
+    Rows without a valid address, role addresses like noreply@, anything already marked invalid or bounced, and
+    duplicates are dropped here before anything leaves this computer. Uploading goes 100 at a time and the same
+    address is never uploaded to the same target twice, so you can re-run it after a stop.</p>
+    <div class="form">
+     <label>Campaign</label><div>${O.camps?.length?`<select id="mc" style="width:100%"><option value="">- no campaign, list only -</option>${O.camps.map(c=>`<option value="${esc(c.id)}">${esc(c.name||c.id)}${c.status?" - "+esc(c.status):""}${c.prospects?" ("+esc(c.prospects)+" prospects)":""}</option>`).join("")}</select><small>Prospects added to a <b>running</b> campaign start its sequence. A paused or draft one just holds them.</small>`:`<small>Press Load campaigns.</small>`}</div>
+     <label>List</label><div>${O.lists?.length?`<select id="mlst" style="width:100%"><option value="">- no list -</option>${O.lists.map(l=>`<option value="${esc(l.id)}">${esc(l.name||l.id)}${l.prospects?" ("+esc(l.prospects)+")":""}</option>`).join("")}</select><small>A list alone uploads the contacts into the CRM without sending anything - the way your MANYREACH_IMPORT scripts do it.</small>`:`<small>Press Lists.</small>`}</div>
+     <label for="mf">Lead file</label><div>${fileopts("mf")}<input type="text" id="mfp" placeholder="or a path inside the workspace, e.g. CC_LEADS/sk_cnc.csv" style="width:100%;margin-top:6px"></div>
+     <label for="ml">How many</label><div><input type="number" id="ml" value="0" min="0" style="width:120px"><small>0 sends the whole file. Duplicates are dropped and rows without a valid email are skipped.</small></div>
+     <div class="full" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="mk">Check the key</button><button class="btn" id="mlc">Load campaigns</button>
+      <button class="btn" id="mls">Senders</button><button class="btn" id="mll">Lists</button>
+      <button class="btn" id="mdry">Show what would be sent</button>
+      <button class="btn go" id="mpush" ${(O.camps?.length||O.lists?.length)?"":"disabled"}>Upload them</button></div>
+    </div>
+    <div class="form" style="margin-top:16px"><label for="mrp">Any other endpoint</label>
+     <div style="display:flex;gap:6px;flex-wrap:wrap"><input type="text" id="mrp" placeholder="/api/v1/campaigns" style="flex:1;min-width:220px">
+      <button class="btn" id="mrg">GET it</button></div>
+     <div class="full"><small>Manyreach lists the exact URL for every operation under Account Settings > API. If one of mine is wrong for your account, call it here and tell me which path worked.</small></div>
+    </div>${res}</section>`;
+
+  if(tab==="mailbox"){const bs=MB||[];
+   body=`<section class="box"><h2>Your own mailboxes</h2>
+    <p>Straight SMTP and IMAP - no third party between you and the recipient. Add mailboxes under Connections.
+    Sending is paced, capped per mailbox per day, and it never emails the same address twice from the same mailbox.</p>
+    ${bs.length?`<div class="tools">${bs.map(b=>`<div class="tool"><div><h3>${esc(b.name)} <span class="tag">${esc(b.daily_limit)}/day</span></h3>
+      <p>${esc(b.from_name||"")} &lt;${esc(b.from_email||"")}&gt;</p>
+      <div class="file">SMTP ${esc(b.smtp_host||"-")}:${esc(b.smtp_port)}${b.imap_host?" &middot; IMAP "+esc(b.imap_host)+":"+esc(b.imap_port):" &middot; no IMAP"}</div></div>
+      <div></div><div class="acts"><button class="btn" data-boxcheck="${esc(b.name)}">Test</button>
+      <button class="btn" data-boxrep="${esc(b.name)}" ${b.imap_host?"":"disabled"}>Replies</button></div></div>`).join("")}</div>`
+     :`<div class="empty"><b>No mailbox yet</b>Add one under Connections: the From address, the SMTP server and an app password. Gmail and Outlook need an app password, not the account password.</div>`}
+   </section>
+   ${bs.length?`<section class="box"><h2>Send a sequence step to a whole file</h2>
+    <p>One email per person, ${esc(bs[0].daily_limit)} a day at most per mailbox, with a pause between each.
+    Write <code>{{first_name}}</code>, <code>{{company}}</code>, <code>{{industry}}</code> - any column of the file - and
+    <code>{{first_name|there}}</code> for a fallback. Rows missing a value you used are skipped, not sent half-empty.</p>
+    <div class="form">
+     <label for="bx">Mailbox</label><div><select id="bx">${bs.map(b=>`<option>${esc(b.name)}</option>`).join("")}</select></div>
+     <label for="bf">Lead file</label><div>${fileopts("bf")}<input type="text" id="bfp" placeholder="or a path inside the workspace" style="width:100%;margin-top:6px"></div>
+     <label for="bs">Subject</label><div><input type="text" id="bs" placeholder="{{company}} - quick question" style="width:100%"></div>
+     <label for="bb">Message</label><div><textarea id="bb" style="min-height:160px" placeholder="Hi {{first_name|there}},&#10;&#10;...&#10;&#10;Juraj"></textarea></div>
+     <label for="bl">How many now</label><div><input type="number" id="bl" value="0" min="0" style="width:110px">
+      <small>0 means up to the daily cap. Pause between sends: <input type="number" id="bd" value="45" min="5" style="width:80px"> seconds (a little randomness is added).</small></div>
+     <div class="full" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="bprev">Preview the first three</button>
+      <button class="btn go" id="bsend">Start sending</button></div>
+    </div>${res}</section>`:res}`;
+  }
+
+  if(tab==="agentsdr")body=`<section class="box"><h2>Send leads into an AgentSDR campaign</h2>
+    <p>AgentSDR (${esc(st.agentsdr_url||"")}) does the sending, the replies and the pipeline; Lead Studio picks who goes in.
+    Prepare a file on the Contacts page first - it lands in AGENTSDR_IMPORT.</p>
+    <div class="form">
+     <label>Campaign</label><div>${O.camps?.length?`<select id="ac" style="width:100%">${O.camps.map(c=>`<option value="${esc(c.id)}">${esc(c.name)} - ${esc(c.status||"")}</option>`).join("")}</select>`:`<small>Press Load campaigns.</small>`}</div>
+     <label for="af">Prepared file</label><div>${fileopts("af")}</div>
+     <label for="al">How many</label><div><input type="number" id="al" value="0" min="0" style="width:120px"><small>0 sends the whole file. It continues where an earlier run stopped.</small></div>
+     <div class="full" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="alc">Load campaigns</button><button class="btn" id="alf">Refresh files</button><button class="btn go" id="ap" ${O.camps?.length&&O.files?.length?"":"disabled"}>Send them in</button></div>
+    </div>${res}</section>`;
+  if(tab==="whatsapp")body=`<section class="box"><h2>Send one WhatsApp message</h2>
+    <p>Goes through OpenWA on this computer (${esc(st.wa_url||"")}, session ${esc(st.wa_session||"default")}). Set the address and key under Connections.
+    OpenWA's own warning, not mine: WhatsApp bans numbers that send first messages to strangers in bulk. This sends one message per press, and there is no list mode on purpose.</p>
+    <div class="form"><label for="wn">Number</label><div><input type="text" id="wn" placeholder="+421900000000" style="width:240px"><small>With the country code.</small></div>
+     <label for="wt">Message</label><div><textarea id="wt" placeholder="Write it as you would to one person."></textarea></div>
+     <div class="full" style="display:flex;gap:8px"><button class="btn" id="wc">Check the gateway</button><button class="btn" id="wd">Show what would be sent</button><button class="btn go" id="ws2">Send it</button></div></div>${res}</section>`;
+  if(tab==="social")body=`<section class="box"><h2>Create a social post</h2>
+    <p>Goes through your Postiz (${esc(st.postiz_url||"")}), which holds the connected accounts. Load the channels first, tick the ones you want, and leave the time empty to post now.</p>
+    <div class="form"><label>Channels</label><div>${O.channels?.length?`<div class="checks">${O.channels.map(c=>`<label><input type="checkbox" value="${esc(c.id)}">${esc(c.name||c.id)}${c.platform?" ("+esc(c.platform)+")":""}</label>`).join("")}</div>`:`<small>Press Load channels.</small>`}</div>
+     <label for="pt">Post</label><div><textarea id="pt" placeholder="What goes out."></textarea></div>
+     <label for="pd">Time</label><div><input type="text" id="pd" placeholder="2026-11-20T09:30:00Z" style="width:240px"><small>Leave empty to post immediately.</small></div>
+     <div class="full" style="display:flex;gap:8px"><button class="btn" id="pl">Load channels</button><button class="btn" id="pdry">Show what would be sent</button><button class="btn go" id="pg">Create the post</button></div></div>${res}</section>`;
+  if(tab==="thread")body=`<section class="box"><h2>Read a conversation</h2>
+    <p>Uses Agent Reach (<code>${esc(st.reach_cmd||"agent-reach")}</code>) to read a thread by its link, so you can see a reply without opening the app. It only reads; it never posts.</p>
+    <div class="form"><label for="ru">Link</label><div><input type="text" id="ru" placeholder="https://..." style="width:100%"></div>
+     <div class="full" style="display:flex;gap:8px"><button class="btn" id="rc">Which channels work</button><button class="btn go" id="rr">Read it</button></div></div>${res}</section>`;
+
+  m.innerHTML=head+`<div class="body">${body}</div>`;
+  $$("[data-tab]").forEach(b=>b.onclick=()=>{O={...O,tab:b.dataset.tab,res:null};outreach()});
+  const run=async(cmd,args,dry)=>{O.res={working:true};outreach();const r=await post("/api/channel",{cmd,args,dry_run:!!dry});O.res=r;
+    toast(r.ok?"Done":(r.error||"That did not work"),!r.ok);outreach()};
+  const loadf=async()=>{const d=await get("/api/files",{path:"AGENTSDR_IMPORT"});O.files=(d.items||[]).filter(f=>!f.dir&&/\.csv$/i.test(f.name)&&!/^_/.test(f.name)).map(f=>"AGENTSDR_IMPORT/"+f.name);outreach()};
+  if(["agentsdr","manyreach","mailbox"].includes(tab)&&O.files===undefined)loadf();
+  if(tab==="mailbox"&&MB===null){await boxes();return outreach()}
+  const chosen=(sel,txt)=>($(txt)?.value.trim())||($(sel)?.value||"");
+
+  /* Manyreach */
+  if($("#mk"))$("#mk").onclick=()=>run("mr-check");
+  if($("#mls"))$("#mls").onclick=()=>run("mr-senders");
+  if($("#mll"))$("#mll").onclick=async()=>{O.res={working:true};outreach();const r=await post("/api/channel",{cmd:"mr-lists"});
+    if(!r.ok){O.res=r;toast(r.error||"Manyreach did not answer",true)}else{O.lists=r.lists||[];O.res=null;toast(O.lists.length+" lists")}outreach()};
+  if($("#mrg"))$("#mrg").onclick=()=>{const p=$("#mrp").value.trim();if(!p)return toast("A path, please",true);run("mr-raw",{path:p,method:"GET"})};
+  if($("#mlc"))$("#mlc").onclick=async()=>{O.res={working:true};outreach();const r=await post("/api/channel",{cmd:"mr-campaigns"});
+    if(!r.ok){O.res=r;toast(r.error||"Manyreach did not answer",true)}else{O.camps=r.campaigns||[];O.res=null;toast(O.camps.length+" campaigns")}outreach()};
+  if($("#mdry"))$("#mdry").onclick=()=>{const f=chosen("mf","#mfp");if(!f)return toast("Pick a lead file",true);
+    run("mr-push",{campaign:$("#mc")?.value||"",list:$("#mlst")?.value||"",file:f,limit:$("#ml").value},true)};
+  if($("#mpush"))$("#mpush").onclick=async()=>{const f=chosen("mf","#mfp"),c=$("#mc")?.value||"",li=$("#mlst")?.value||"";
+    const cn=(O.camps||[]).find(x=>x.id===c),ln=(O.lists||[]).find(x=>x.id===li);
+    if(!f)return toast("Pick a lead file",true);
+    if(!c&&!li)return toast("Pick a campaign or a list",true);
+    const where=[cn?"campaign \""+cn.name+"\"":"",ln?"list \""+ln.name+"\"":""].filter(Boolean).join(" and ");
+    const warn=cn&&/running|active/i.test(cn.status||"")?"\n\nThat campaign is RUNNING - these people start getting emails.":"";
+    if(!confirm("Upload the leads in "+f.split("/").pop()+" to "+where+"?"+warn))return;
+    const r=await post("/api/mail/push",{campaign:c,list:li,file:f,limit:$("#ml").value});
+    if(r.error)return toast(r.error,true);curJob=r.job;JT="log";await refresh();go("log")};
+
+  /* my mailboxes */
+  $$("[data-boxcheck]").forEach(b=>b.onclick=()=>run("box-check",{account:b.dataset.boxcheck}));
+  $$("[data-boxrep]").forEach(b=>b.onclick=()=>run("box-replies",{account:b.dataset.boxrep,days:7}));
+  const campspec=()=>({account:$("#bx").value,file:chosen("bf","#bfp"),subject:$("#bs").value,
+    body:$("#bb").value,limit:$("#bl").value,delay:$("#bd").value});
+  if($("#bprev"))$("#bprev").onclick=async()=>{const sp=campspec();
+    if(!sp.file||!sp.subject.trim()||!sp.body.trim())return toast("A file, a subject and a message, please",true);
+    O.res={working:true};outreach();
+    const r=await post("/api/mail/campaign",{...sp,preview:true,dry_run:true});
+    if(r.error){O.res={error:r.error};toast(r.error,true);return outreach()}
+    curJob=r.job;JT="log";await refresh();go("log")};
+  if($("#bsend"))$("#bsend").onclick=async()=>{const sp=campspec();
+    if(!sp.file||!sp.subject.trim()||!sp.body.trim())return toast("A file, a subject and a message, please",true);
+    if(!confirm("Send from "+sp.account+" to the people in "+sp.file.split("/").pop()+"?\n\nSubject: "+sp.subject+
+      "\n\nIt stops at the daily cap and pauses "+sp.delay+"s between emails. Real emails go out."))return;
+    const r=await post("/api/mail/campaign",sp);
+    if(r.error)return toast(r.error,true);curJob=r.job;JT="log";await refresh();go("log")};
+
+  /* AgentSDR, WhatsApp, Postiz, threads - unchanged */
+  if($("#alf"))$("#alf").onclick=loadf;
+  if($("#alc"))$("#alc").onclick=async()=>{const r=await post("/api/agentsdr",{action:"campaigns"});
+    if(!r.ok){O.res=r;toast(r.error||"AgentSDR did not answer",true)}else{O.camps=r.campaigns||[];O.res=null;toast(O.camps.length+" campaigns")}outreach()};
+  if($("#ap"))$("#ap").onclick=async()=>{const c=$("#ac").value,f=$("#af").value,n=O.camps.find(x=>x.id===c);
+    if(!confirm("Add the leads in "+f.split("/").pop()+" to \""+(n?n.name:c)+"\"?\n\nIf that campaign is active, they start getting emails."))return;
+    const r=await post("/api/agentsdr",{action:"push",campaign:c,path:f,limit:$("#al").value});
+    if(r.error)return toast(r.error,true);curJob=r.job;JT="log";await refresh();go("log")};
+  if($("#wc"))$("#wc").onclick=()=>run("whatsapp-check");
+  if($("#wd"))$("#wd").onclick=()=>run("whatsapp-send",{to:$("#wn").value,text:$("#wt").value},true);
+  if($("#ws2"))$("#ws2").onclick=()=>{const to=$("#wn").value.trim(),tx=$("#wt").value.trim();
+    if(!to||!tx)return toast("A number and a message, please",true);
+    if(confirm("Send this WhatsApp message to "+to+"?\n\n"+tx))run("whatsapp-send",{to,text:tx})};
+  if($("#pl"))$("#pl").onclick=async()=>{const r=await post("/api/channel",{cmd:"postiz-channels"});
+    if(!r.ok){O.res=r;toast(r.error||"Postiz did not answer",true)}else{O.channels=r.channels||[];O.res=null;toast(O.channels.length+" channels")}outreach()};
+  if($("#pdry"))$("#pdry").onclick=()=>run("postiz-post",{content:$("#pt").value,channels:$$(".checks input:checked").map(c=>c.value),date:$("#pd").value},true);
+  if($("#pg"))$("#pg").onclick=()=>{const ch=$$(".checks input:checked").map(c=>c.value),tx=$("#pt").value.trim();
+    if(!ch.length||!tx)return toast("Pick a channel and write the post",true);
+    if(confirm("Publish to "+ch.length+" channel(s)"+($("#pd").value?" at "+$("#pd").value:" now")+"?\n\n"+tx))
+      run("postiz-post",{content:tx,channels:ch,date:$("#pd").value,now:!$("#pd").value})};
+  if($("#rc"))$("#rc").onclick=()=>run("reach-channels");
+  if($("#rr"))$("#rr").onclick=()=>run("reach-read",{url:$("#ru").value});
+}
+
+/* ---------- Domains without contacts ---------- */
+let G={sum:null,cols:[],rows:[],q:"",offset:0,tld:"",busy:"",src:"local",idx:""};
+async function gaps(){
+  if(!G.idx)G.idx=(S.settings&&S.settings.cc_index_dir)||"";
+  const m=$("#main"),f=G.sum||{};
+  const tile=(n,l)=>`<div><b>${n===null||n===undefined?"-":nfmt(n)}</b><span>${l}</span></div>`;
+  m.innerHTML=`<div class="bar"><h1>Domains without contacts</h1>
+     <span class="note">Everyone in your lead database with no email and no phone - and what Common Crawl still holds about them</span>
+     <span class="sp"></span>
+     <input type="text" id="gq" placeholder="Search" value="${esc(G.q)}" style="width:170px">
+     <input type="text" id="gt" placeholder="only .sk,.cz" value="${esc(G.tld)}" style="width:120px">
+     <button class="btn" id="gr">${G.sum?"Rebuild the list":"Build the list"}</button>
+     <button class="btn go" id="ge" ${G.sum&&G.sum.findable_in_common_crawl?"":"disabled"}>Enrich from Common Crawl</button>
+     <button class="btn" id="gx">Export what was found</button></div>
+   <div class="chips" style="gap:8px;align-items:center">
+     <span class="note">Run these domains against the Common Crawl index:</span>
+     <select id="gsrc" style="width:230px">
+       <option value="local"${G.src==="local"?" selected":""}>local copy of the index</option>
+       <option value="live"${G.src==="live"?" selected":""}>live over HTTPS (data.commoncrawl.org)</option>
+     </select>
+     <input type="text" id="gidx" placeholder="M:\index" value="${esc(G.idx)}" style="width:220px"${G.src==="live"?" disabled":""}>
+     <button class="btn" id="gscan">Scan the index</button>
+     <button class="btn" id="gfresh">Fresh scan (all 24.8M)</button>
+     <span class="note" id="gsnote">${G.src==="live"?"Reads the 300 index parts over the network - slow, no download needed.":"The folder holding part-00000-....c000.zstd.parquet. Resumes where it stopped."}</span>
+   </div>
+   ${G.sum?`<div class="sum">${tile(f.domains_in_database,"domains in the database")}
+     ${tile(f.without_any_contact,"with nobody to write to")}
+     ${tile(f.findable_in_common_crawl,"Common Crawl has a page for")}
+     ${tile(f.domains_fetched,"already looked up")}
+     ${tile(f.contacts_found,"contacts found")}
+     <div><b>${esc(f.hit_rate||"-")}</b><span>of looked-up domains gave an address</span></div></div>`:""}
+   <div class="body flush" id="gbody">${G.busy?`<div class="empty"><b>${esc(G.busy)}</b>This reads your whole lead database, so it can take a minute.</div>`:""}</div>`;
+  $("#gr").onclick=gapsBuild;
+  $("#ge").onclick=gapsEnrich;
+  $("#gx").onclick=async()=>{const r=await post("/api/cc/export",{});
+    if(r.error)return toast(r.error,true);
+    toast(nfmt(r.domains_with_a_contact)+" domains with a contact -> "+r.file);await gapsLoad()};
+  $("#gsrc").onchange=()=>{G.src=$("#gsrc").value;gaps()};
+  $("#gidx").oninput=deb(()=>{G.idx=$("#gidx").value},350);
+  $("#gfresh").onclick=async()=>{
+    const note=t=>{const el=$("#gsnote");if(el){el.textContent=t;el.style.color="#c0392b"}toast(t,true)};
+    if(!G.sum)return note("Build the gap list first - press Build the list.");
+    if(!confirm("Fresh scan will delete previous scan results and scan ALL 24.8M domains against the index. This can take hours. Continue?"))return;
+    const body={source:G.src,fresh:true};
+    if(G.src==="local"){
+      const d=($("#gidx").value||"").trim();
+      if(!d)return note("Type the folder that holds the index parts, for example M:\\index");
+      body.index=d;G.idx=d}
+    let r;
+    try{r=await post("/api/cc/scan",body)}catch(e){return note("The app did not answer: "+e)}
+    if(!r||r.error)return note((r&&r.error)||"The scan did not start.");
+    if(!r.job)return note("No job id came back - look in Jobs.");
+    toast("Fresh scan of all domains - job "+r.job);
+    curJob=r.job;JT="log";await refresh();go("log")};
+  $("#gscan").onclick=async()=>{
+    const note=t=>{const el=$("#gsnote");if(el){el.textContent=t;el.style.color="#c0392b"}toast(t,true)};
+    if(!G.sum)return note("Build the gap list first - press Build the list.");
+    const body={source:G.src};
+    if(G.src==="local"){
+      const d=($("#gidx").value||"").trim();
+      if(!d)return note("Type the folder that holds the index parts, for example M:\\index");
+      body.index=d;G.idx=d}
+    let r;
+    try{r=await post("/api/cc/scan",body)}catch(e){return note("The app did not answer: "+e)}
+    if(!r||r.error)return note((r&&r.error)||"The scan did not start.");
+    if(!r.job)return note("No job id came back - look in Jobs.");
+    toast((G.src==="live"?"Scanning the live index":"Scanning the local index")+" - job "+r.job);
+    curJob=r.job;JT="log";await refresh();go("log")};
+  $("#gq").oninput=deb(()=>{G.q=$("#gq").value;G.offset=0;gapsLoad()},350);
+  $("#gt").oninput=deb(()=>{G.tld=$("#gt").value},350);
+  if(!G.busy)await gapsLoad();
+}
+async function gapsBuild(){
+  G.busy="Going through the lead database";gaps();
+  const r=await post("/api/cc/gaps",{tld:G.tld});
+  G.busy="";
+  if(r.error){toast(r.error,true);return gaps()}
+  const st=await post("/api/cc/status",{});
+  G.sum={...r,...(st.error?{}:st)};
+  toast(nfmt(r.without_any_contact)+" domains have nobody to write to"
+    +(r.findable_in_common_crawl?"; Common Crawl has a page for "+nfmt(r.findable_in_common_crawl):""));
+  G.offset=0;gaps();
+}
+async function gapsEnrich(){
+  const n=G.sum?.findable_in_common_crawl||0;
+  if(!confirm("Look up "+nfmt(n)+" domains in Common Crawl?\n\nIt downloads the stored copy of each site's home and "
+    +"contact page - a few kilobytes each - and reads the addresses off them. The websites themselves are never contacted.\n\n"
+    +"You can stop it any time; what is already found is kept."))return;
+  const r=await post("/api/cc/run",{source:"hf",par:40});
+  if(r.error)return toast(r.error,true);
+  curJob=r.job;JT="log";await refresh();go("log");
+}
+async function gapsLoad(){
+  const d=await get("/api/table",{path:"CC_ENRICH/gaps.csv",q:G.q,offset:G.offset,limit:PAGE});
+  const b=$("#gbody");if(!b)return;
+  if(d.error||!d.cols?.length){
+    b.innerHTML=`<div class="empty"><b>No list yet</b>Press "Build the list" and I will go through your lead database,
+      keep every domain where no row has an email or a phone, and check how many of them Common Crawl still has a page for.</div>`;
+    return;
+  }
+  G.cols=d.cols;G.rows=d.rows;
+  const hv=d.cols.indexOf("cc_contact_pages");
+  b.innerHTML=`<div class="gridwrap">${grid(d.cols,d.rows,G.offset)}</div>
+    <div class="bar"><span class="note">${nfmt(G.offset+1)}-${nfmt(G.offset+d.rows.length)} of ${nfmt(d.total)}${d.counted?"":"+"}</span>
+     <span class="sp"></span>
+     <button class="btn" id="gp" ${G.offset?"":"disabled"}>Previous</button>
+     <button class="btn" id="gn" ${d.more?"":"disabled"}>Next</button></div>`;
+  if($("#gp"))$("#gp").onclick=()=>{G.offset=Math.max(0,G.offset-PAGE);gapsLoad()};
+  if($("#gn"))$("#gn").onclick=()=>{G.offset+=PAGE;gapsLoad()};
+}
+
+/* ---------- Live crawler: contact pages and emails ---------- */
+let W={tab:"links",sum:null,file:"",par:20,pages:5,delay:1,robots:true,limit:0,out:null};
+async function web(){
+  const m=$("#main"),f=W.sum||{};
+  const tile=(n,l)=>`<div><b>${n===null||n===undefined?"-":(typeof n==="number"?nfmt(n):esc(n))}</b><span>${l}</span></div>`;
+  const TABS=[["links","Find contact pages"],["emails","Crawl for emails"]];
+  m.innerHTML=`<div class="bar"><h1>Crawler</h1>
+     <span class="note">Reads the websites themselves, as they are today - the live counterpart to the Common Crawl enrichment</span>
+     <span class="sp"></span><div class="tabs">${TABS.map(([k,n])=>`<button class="${W.tab===k?"on":""}" data-wt="${k}">${n}</button>`).join("")}</div></div>
+   ${W.sum?`<div class="sum">${tile(f.sites_scanned_for_links,"sites scanned for links")}
+     ${tile(f.contact_pages_found,"contact pages found")}
+     ${tile(f.sites_crawled_for_emails,"sites crawled for emails")}
+     ${tile(f.addresses_found,"addresses found")}
+     ${tile(f.hit_rate,"of crawled sites gave an address")}</div>`:""}
+   <div class="body"><section class="box">
+   ${W.tab==="links"
+     ? `<h2>Find each site's contact pages</h2>
+        <p>One request per site: it reads the homepage, pulls out every link, and works out which lead to
+        <b>contact</b>, <b>about</b>, <b>team</b>, <b>legal/impressum</b>, <b>careers</b> or <b>support</b> pages -
+        in Slovak, Czech, German, Polish, Hungarian and English. Subdomains on the same company domain are listed too.
+        You get one row per site with the best contact page, and a full link table beside it.</p>`
+     : `<h2>Crawl sites for addresses</h2>
+        <p>Homepage first, then it follows the most promising internal pages - kontakt, impressum, o-nás, team -
+        up to the limit you set, and reads addresses and phone numbers off all of them.
+        It decodes <code>name [at] firma [dot] sk</code> and Cloudflare-hidden addresses, and ranks what it finds:
+        the company's own role address first, <code>noreply@</code> last.</p>`}
+   <div class="form">
+    <label for="wf">Domains file</label><div><input type="text" id="wf" value="${esc(W.file)}" placeholder="CC_ENRICH/gaps.csv" style="width:100%">
+      <small>A CSV with a domain, website or url column, or a plain list, one per line. Anywhere in the workspace.
+      <a href="#" id="wg">use the no-contact list</a></small></div>
+    <label for="wp">At a time</label><div><input type="number" id="wp" value="${W.par}" min="1" max="100" style="width:90px">
+      <small>Parallel sites. 20 is polite, 50 is pushing it - these are other people's servers.</small></div>
+    ${W.tab==="emails"?`<label for="wpg">Pages per site</label><div><input type="number" id="wpg" value="${W.pages}" min="0" max="25" style="width:90px">
+      <small>Beyond the homepage. 5 covers contact, impressum and about on most sites.</small></div>`:""}
+    <label for="wd">Pause</label><div><input type="number" id="wd" value="${W.delay}" min="0" max="30" step="0.5" style="width:90px">
+      <small>Seconds between two requests to the <i>same</i> site. Different sites are hit in parallel regardless.</small></div>
+    <label for="wl">How many sites</label><div><input type="number" id="wl" value="${W.limit}" min="0" style="width:110px"><small>0 means the whole file. Already-done domains are skipped either way.</small></div>
+    <label for="wr">robots.txt</label><div><div class="checks"><label><input type="checkbox" id="wr" ${W.robots?"checked":""}>Respect it</label></div>
+      <small>On by default. Sites that forbid crawling are skipped and marked BLOCKED_BY_ROBOTS.</small></div>
+    <div class="full" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn go" id="wrun">${W.tab==="links"?"Find the contact pages":"Start crawling"}</button>
+      <button class="btn" id="wst">Refresh the numbers</button>
+      <button class="btn" id="wex">Export the addresses</button></div>
+   </div>
+   ${W.out?`<pre class="code" style="margin-top:12px">${esc(JSON.stringify(W.out,null,1))}</pre>`:""}
+   </section></div>`;
+  $$("[data-wt]").forEach(b=>b.onclick=()=>{W.tab=b.dataset.wt;W.out=null;web()});
+  $("#wg").onclick=e=>{e.preventDefault();W.file="CC_ENRICH/gaps.csv";web()};
+  const grab=()=>{W.file=$("#wf").value.trim();W.par=+$("#wp").value||20;W.delay=+$("#wd").value||0;
+    W.limit=+$("#wl").value||0;W.robots=$("#wr").checked;if($("#wpg"))W.pages=+$("#wpg").value;};
+  $("#wst").onclick=async()=>{grab();const r=await post("/api/web/status",{});if(r.error)return toast(r.error,true);W.sum=r;web()};
+  $("#wex").onclick=async()=>{const r=await post("/api/web/export",{});
+    if(r.error)return toast(r.error,true);toast(nfmt(r.domains_with_an_address)+" domains -> "+r.file);W.out=r;web()};
+  $("#wrun").onclick=async()=>{grab();
+    if(!W.file)return toast("Pick a file of domains first",true);
+    const what=W.tab==="links"?"read the homepage of":"crawl";
+    if(!confirm("About to "+what+" the sites in "+W.file.split("/").pop()+(W.limit?(", first "+W.limit):"")+
+      ".\n\nThis contacts the websites themselves, from your connection, "+W.par+" at a time"+
+      (W.robots?"":"\n\nrobots.txt will be IGNORED.")))return;
+    const r=await post("/api/web/"+W.tab,{file:W.file,par:W.par,pages:W.pages,delay:W.delay,
+      limit:W.limit,ignore_robots:!W.robots});
+    if(r.error)return toast(r.error,true);curJob=r.job;JT="log";await refresh();go("log")};
+  if(!W.sum){const r=await post("/api/web/status",{});if(!r.error){W.sum=r;const b=$(".sum");if(!b)web()}}
+}
+
+/* ---------- Connections ---------- */
+async function conn(msg){
+  if(MB===null)await boxes();
+  const st=S.settings||{},app=(S.app||"").replace(/\\/g,"\\\\"),sep=(S.app||"").includes("\\")?"\\\\":"/";
+  const cfg=`{\n  "mcpServers": {\n    "lead-studio": {\n      "command": "python",\n      "args": ["${app}${sep}lead_studio_mcp.py"]\n    }\n  }\n}`;
+  const mlist=[...new Set([st.ollama_model,...(models||[])].filter(Boolean))];
+  $("#main").innerHTML=`<div class="bar"><h1>Connections</h1></div><div class="body">
+  <section class="box"><h2>Ollama Cloud</h2>
+   <p>Runs open models on Ollama's servers for the AI enrich page. Create a free key at ollama.com/settings/keys and paste it here. The key is stored in lead_studio_settings.json on this computer and is never shown again.</p>
+   <div class="form">
+    <label for="ok">API key</label><div><input type="password" id="ok" placeholder="${st.ollama_has_key?"Saved ("+esc(st.ollama_key_hint||"hidden")+") - paste a new one to replace it":"Paste your key"}" autocomplete="off" style="width:100%">${st.ollama_key_from_env?`<small>A key from the OLLAMA_API_KEY environment variable is in use.</small>`:""}</div>
+    <label for="ob">Address</label><div><input type="text" id="ob" value="${esc(st.ollama_base||"https://ollama.com")}" style="width:100%"></div>
+    <label for="om">Default model</label><div><select id="om">${mlist.length?mlist.map(x=>`<option ${x===st.ollama_model?"selected":""}>${esc(x)}</option>`).join(""):`<option value="">Save a key, then load models</option>`}</select></div>
+    <div class="full" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn go" id="os">Save</button><button class="btn" id="ot">Test and load models</button>${st.ollama_has_key&&!st.ollama_key_from_env?`<button class="btn" id="of">Forget key</button>`:""}<span id="omsg" class="note">${esc(msg||"")}</span></div>
+   </div></section>
+  <section class="box"><h2>MCP for Claude Desktop and other AI clients</h2>
+   <p>Lead Studio is an MCP server. A connected AI client can list and run your tools, follow their logs, read lead files and start AI enrichment. Uploads and sends still ask for your go-ahead. Add this to the client's MCP settings (Claude Desktop: Settings, Developer, Edit Config), then restart the client.</p>
+   <pre class="code" id="mc">${esc(cfg)}</pre><button class="btn" data-copy="mc">Copy</button>
+   <p style="margin-top:14px">Clients that connect over HTTP can use this address while Lead Studio is open, sending the token as a Bearer header.</p>
+   <pre class="code" id="mh">http://127.0.0.1:${esc(S.port||8765)}/mcp\nAuthorization: Bearer ${esc(st.mcp_token||"")}</pre><button class="btn" data-copy="mh">Copy</button> <button class="btn" id="mt">Make a new token</button>
+  </section>
+  <section class="box"><h2>AgentSDR</h2>
+   <p>The outreach and CRM app that sends the emails and works the replies. It runs on this computer (Docker, port 3000) or on your server. Create the key inside AgentSDR under Settings, API keys: it is shown once.</p>
+   <div class="form">
+    <label for="au">Address</label><div><input type="text" id="au" value="${esc(st.agentsdr_url||"")}" style="width:100%"></div>
+    <label for="ak">API key</label><div><input type="password" id="ak" placeholder="${st.agentsdr_has_key?"Saved - paste a new one to replace it":"asdr_..."}" autocomplete="off" style="width:100%"></div>
+    <div class="full" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn go" id="as">Save</button><button class="btn" id="at">Test it</button><span id="amsg" class="note"></span></div>
+   </div></section>
+  <section class="box"><h2>Manyreach</h2>
+   <p>Your cold-email platform: it holds the senders, the warmup, the sequences and the replies. Lead Studio pushes prospects into a campaign through the API.
+   The key is in Manyreach under Account Settings, API - it looks like ca5b617f-cd2a-412b-925f-10g628b279ds. It is kept in lead_studio_settings.json on this computer.</p>
+   <div class="form">
+    <label for="mru">Address</label><div><input type="text" id="mru" value="${esc(st.mr_base||"https://app.manyreach.com")}" style="width:100%"><small>Only change this if your account is on another domain.</small></div>
+    <label for="mrk">API key</label><div><input type="password" id="mrk" placeholder="${st.mr_has_key?"Saved - paste a new one to replace it":"Paste the key from Account Settings, API"}" autocomplete="off" style="width:100%"></div>
+    <div class="full" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn go" id="mrs">Save</button><button class="btn" id="mrt">Test it</button><span id="mrmsg" class="note"></span></div>
+   </div></section>
+  <section class="box"><h2>Your own mailboxes (SMTP and IMAP)</h2>
+   <p>Send straight from a mailbox you own, with no platform in between. SMTP sends, IMAP reads the replies.
+   Gmail and Outlook need an <b>app password</b>, not your account password. The password is stored in plain text in
+   lead_studio_settings.json on this computer - use a mailbox made for outreach, not your personal one.</p>
+   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+    <button class="btn go" id="mbimp">Import the senders from Manyreach</button>
+    <span class="note">${st.mailbox_count?esc(st.mailbox_count)+" saved"+(st.mailboxes_without_password?", "+esc(st.mailboxes_without_password)+" still need a password":""):"none yet"}</span>
+    <div class="checks"><label><input type="checkbox" id="mbonly">only the connected ones</label></div></div>
+   ${(MB||[]).length?`<div class="tools" style="margin-bottom:14px">${(MB||[]).slice(0,MBN).map(b=>`<div class="tool">
+     <div><h3>${esc(b.name)} <span class="tag">${esc(b.daily_limit)}/day</span></h3><p>${esc(b.from_name||"")} &lt;${esc(b.from_email||"")}&gt;</p>
+     <div class="file">SMTP ${esc(b.smtp_host||"-")}:${esc(b.smtp_port)} ${b.has_smtp_pass?"(password saved)":"<b>(no password yet)</b>"}${b.imap_host?" &middot; IMAP "+esc(b.imap_host)+":"+esc(b.imap_port):""}${b.from_manyreach?" &middot; from Manyreach"+(b.manyreach_warmup?", warming up":""):""}</div></div>
+     <div></div><div class="acts"><button class="btn" data-bedit="${esc(b.name)}">Edit</button><button class="btn" data-bdel="${esc(b.name)}">Remove</button></div></div>`).join("")}</div>
+     ${(MB||[]).length>MBN?`<button class="btn" id="mbmore" style="margin-bottom:14px">Show ${esc(Math.min(25,(MB||[]).length-MBN))} more of ${esc((MB||[]).length)}</button>`:""}`:""}
+   <div class="form">
+    <label for="nbn">Name</label><div><input type="text" id="nbn" value="${esc(B.name||"")}" placeholder="Juraj - AMCEF" style="width:100%"><small>Whatever you want to call it. Saving under an existing name replaces that one.</small></div>
+    <label for="nbf">From</label><div style="display:flex;gap:6px;flex-wrap:wrap"><input type="text" id="nbfn" value="${esc(B.from_name||"")}" placeholder="Juraj Brandobur" style="flex:1;min-width:140px"><input type="text" id="nbf" value="${esc(B.from_email||"")}" placeholder="juraj@example.com" style="flex:2;min-width:200px"></div>
+    <label for="nbr">Reply-To</label><div><input type="text" id="nbr" value="${esc(B.reply_to||"")}" placeholder="optional" style="width:100%"></div>
+    <label for="nbsh">SMTP</label><div style="display:flex;gap:6px;flex-wrap:wrap"><input type="text" id="nbsh" value="${esc(B.smtp_host||"")}" placeholder="smtp.gmail.com" style="flex:2;min-width:180px">
+     <input type="number" id="nbsp" value="${esc(B.smtp_port||587)}" style="width:90px"><select id="nbse"><option value="starttls" ${B.smtp_security==="ssl"?"":"selected"}>starttls</option><option value="ssl" ${B.smtp_security==="ssl"?"selected":""}>ssl</option></select></div>
+    <label for="nbsu">SMTP user</label><div><input type="text" id="nbsu" value="${esc(B.smtp_user||"")}" placeholder="usually the same as the From address" style="width:100%"></div>
+    <label for="nbsw">SMTP password</label><div><input type="password" id="nbsw" placeholder="${B.has_smtp_pass?"Saved - paste a new one to replace it":"an app password"}" autocomplete="off" style="width:100%"></div>
+    <label for="nbih">IMAP</label><div style="display:flex;gap:6px;flex-wrap:wrap"><input type="text" id="nbih" value="${esc(B.imap_host||"")}" placeholder="imap.gmail.com - optional, for reading replies" style="flex:2;min-width:180px">
+     <input type="number" id="nbip" value="${esc(B.imap_port||993)}" style="width:90px"></div>
+    <label for="nbiw">IMAP password</label><div><input type="password" id="nbiw" placeholder="${B.has_imap_pass?"Saved":"leave empty to reuse the SMTP password"}" autocomplete="off" style="width:100%"></div>
+    <label for="nbd">Daily cap</label><div><input type="number" id="nbd" value="${esc(B.daily_limit||40)}" min="1" style="width:110px"><small>Emails a day from this mailbox. Start at 20-30 on a new one and raise it over weeks.</small></div>
+    <label for="nbu">Unsubscribe to</label><div><input type="text" id="nbu" value="${esc(B.unsubscribe_mailto||"")}" placeholder="optional - an address for the one-click unsubscribe header" style="width:100%"></div>
+    <div class="full" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn go" id="nbs">Save mailbox</button>${B.name?`<button class="btn" id="nbc">Cancel</button>`:""}<button class="btn" data-v="outreach">Test it on the Outreach page</button></div>
+   </div></section>
+  <section class="box"><h2>Outreach channels</h2>
+   <p>Three separate programs you install and run yourself; Lead Studio only talks to them. OpenWA is a WhatsApp gateway, Postiz schedules social posts, Agent Reach reads threads. Keys are kept in lead_studio_settings.json on this computer.</p>
+   <div class="form">
+    <label for="wu">OpenWA address</label><div><input type="text" id="wu" value="${esc(st.wa_url||"")}" style="width:100%"><small>Its default is http://localhost:2785 once OpenWA is running.</small></div>
+    <label for="wk">OpenWA API key</label><div><input type="password" id="wk" placeholder="${st.wa_has_key?"Saved - paste a new one to replace it":"Only if you set one in OpenWA"}" autocomplete="off" style="width:100%"></div>
+    <label for="wss">OpenWA session</label><div><input type="text" id="wss" value="${esc(st.wa_session||"default")}" style="width:240px"></div>
+    <label for="pu">Postiz address</label><div><input type="text" id="pu" value="${esc(st.postiz_url||"")}" style="width:100%"><small>https://api.postiz.com for the hosted one, or your own server if you self-host it.</small></div>
+    <label for="pk">Postiz API key</label><div><input type="password" id="pk" placeholder="${st.postiz_has_key?"Saved - paste a new one to replace it":"Postiz, Settings, Public API"}" autocomplete="off" style="width:100%"></div>
+    <label for="rcm">Agent Reach command</label><div><input type="text" id="rcm" value="${esc(st.reach_cmd||"agent-reach")}" style="width:240px"></div>
+    <div class="full" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn go" id="cs">Save</button><button class="btn" data-v="outreach">Test them on the Outreach page</button></div>
+   </div></section>
+  <section class="box"><h2>Workspace</h2><p>Lead Studio works inside this folder and runs the tools with the Python installed on this computer.</p>
+   <pre class="code">${esc(S.root||"")}</pre><button class="btn" id="wo">Open in Explorer</button> <button class="btn" id="wr">Rescan scripts</button>
+   <div class="form" style="margin-top:14px"><label for="ccd">Common Crawl folder</label>
+    <div><input type="text" id="ccd" value="${esc(st.cc_dir||"")}" placeholder="found automatically - the folder holding cc_bulk_scrape.py and cc_pages" style="width:100%">
+     <small>Used by "No contacts" to look domains up in the crawl. Leave it empty unless the folder moved.</small></div>
+    <div class="full"><button class="btn" id="ccs">Save</button></div></div></section></div>`;
+  const save=async extra=>{const b={ollama_base:$("#ob").value,ollama_model:$("#om").value,...extra};if($("#ok").value.trim())b.ollama_key=$("#ok").value.trim();
+    const r=await post("/api/settings",b);if(r.error){toast(r.error,true);return false}S.settings=r.settings;chrome();return true};
+  $("#os").onclick=async()=>{if(await save()){toast("Saved");conn()}};
+  $("#ot").onclick=async()=>{if(!await save())return;$("#omsg").textContent="Asking Ollama";const r=await get("/api/ollama/models");
+    if(r.error){models=[];return conn(r.error)}models=r.models;if(!S.settings.ollama_model&&models.length){await post("/api/settings",{ollama_model:models[0]});await refresh()}conn("Connected. "+models.length+" models available to this key.")};
+  if($("#of"))$("#of").onclick=async()=>{await save({forget_key:true});models=null;toast("Key removed");conn()};
+  $("#mt").onclick=async()=>{await save({new_mcp_token:true});toast("New token made. Update it in your client.");conn()};
+  const saveA=async()=>{const b={agentsdr_url:$("#au").value};if($("#ak").value.trim())b.agentsdr_key=$("#ak").value.trim();
+    const r=await post("/api/channel/settings",b);if(r.error){toast(r.error,true);return false}S.settings=r.settings;chrome();return true};
+  $("#as").onclick=async()=>{if(await saveA()){toast("Saved");conn()}};
+  $("#at").onclick=async()=>{if(!await saveA())return;$("#amsg").textContent="Asking AgentSDR";
+    const r=await post("/api/agentsdr",{action:"campaigns"});$("#amsg").textContent=r.ok?("Connected. "+r.count+" email campaigns."):(r.error||"No answer")};
+  $("#cs").onclick=async()=>{const b={wa_url:$("#wu").value,wa_session:$("#wss").value,postiz_url:$("#pu").value,reach_cmd:$("#rcm").value};
+    if($("#wk").value.trim())b.wa_key=$("#wk").value.trim();if($("#pk").value.trim())b.postiz_key=$("#pk").value.trim();
+    const r=await post("/api/channel/settings",b);if(r.error)return toast(r.error,true);S.settings=r.settings;chrome();toast("Saved");conn()};
+  if($("#mrs"))$("#mrs").onclick=async()=>{const b={mr_base:$("#mru").value};if($("#mrk").value.trim())b.mr_key=$("#mrk").value.trim();
+    const r=await post("/api/channel/settings",b);if(r.error)return toast(r.error,true);S.settings=r.settings;chrome();toast("Saved");conn()};
+  if($("#mrt"))$("#mrt").onclick=async()=>{const b={mr_base:$("#mru").value};if($("#mrk").value.trim())b.mr_key=$("#mrk").value.trim();
+    await post("/api/channel/settings",b);await refresh();$("#mrmsg").textContent="Asking Manyreach";
+    const r=await post("/api/channel",{cmd:"mr-check"});
+    $("#mrmsg").textContent=r.ok?("Connected. "+r.campaigns+" campaigns, "+r.senders+" senders."):((r.detail&&r.detail.error)||r.error||"No answer")};
+  if($("#mbimp"))$("#mbimp").onclick=async()=>{
+    if(!S.settings.mr_has_key)return toast("Save the Manyreach API key first",true);
+    if(!confirm("Copy the senders from Manyreach into Lead Studio?\n\nServer, port, username, daily limit and "
+      +"warmup state come across. Manyreach never gives out the passwords, so each mailbox arrives without one "
+      +"and cannot send until you add it. Passwords already saved here are kept."))return;
+    toast("Asking Manyreach - this pages through the whole account, give it a moment");
+    const r=await post("/api/mailbox/import",{only_connected:$("#mbonly").checked});
+    if(r.error)return toast(r.error,true);
+    S.settings=r.settings;await boxes(true);
+    toast(r.added+" added, "+r.updated+" updated, "+r.need_a_password+" still need a password");conn()};
+  if($("#mbmore"))$("#mbmore").onclick=()=>{MBN+=25;conn()};
+  $$("[data-bedit]").forEach(x=>x.onclick=()=>{B=(MB||[]).find(m=>m.name===x.dataset.bedit)||{};conn()});
+  $$("[data-bdel]").forEach(x=>x.onclick=async()=>{if(!confirm("Remove the mailbox \""+x.dataset.bdel+"\"? Nothing already sent is touched."))return;
+    const r=await post("/api/mailbox",{action:"delete",name:x.dataset.bdel});if(r.error)return toast(r.error,true);
+    S.settings=r.settings;await boxes(true);B={};toast("Removed");conn()});
+  if($("#nbc"))$("#nbc").onclick=()=>{B={};conn()};
+  if($("#nbs"))$("#nbs").onclick=async()=>{const box={name:$("#nbn").value,from_name:$("#nbfn").value,from_email:$("#nbf").value,
+      reply_to:$("#nbr").value,smtp_host:$("#nbsh").value,smtp_port:$("#nbsp").value,smtp_security:$("#nbse").value,
+      smtp_user:$("#nbsu").value||$("#nbf").value,imap_host:$("#nbih").value,imap_port:$("#nbip").value,
+      daily_limit:$("#nbd").value,unsubscribe_mailto:$("#nbu").value};
+    if($("#nbsw").value)box.smtp_pass=$("#nbsw").value;
+    if($("#nbiw").value)box.imap_pass=$("#nbiw").value;
+    if($("#nbih").value&&!box.imap_user)box.imap_user=$("#nbsu").value||$("#nbf").value;
+    const r=await post("/api/mailbox",{box});if(r.error)return toast(r.error,true);
+    S.settings=r.settings;await boxes(true);B={};chrome();toast("Mailbox saved");conn()};
+  if($("#ccs"))$("#ccs").onclick=async()=>{const r=await post("/api/channel/settings",{cc_dir:$("#ccd").value});
+    if(r.error)return toast(r.error,true);S.settings=r.settings;toast("Saved");conn()};
+  $("#wo").onclick=()=>post("/api/open",{path:"."});$("#wr").onclick=async()=>{await post("/api/reload");await refresh();toast("Script list refreshed")};
+  $$("[data-copy]").forEach(b=>b.onclick=()=>navigator.clipboard.writeText($("#"+b.dataset.copy).textContent).then(()=>toast("Copied")));
+  if(view==="senders"){$("#main .bar h1").textContent="Senders";
+    $$("#main section.box").forEach(x=>{if(!/mailboxes \(SMTP/.test(x.querySelector("h2")?.textContent||""))x.style.display="none"})}
+}
+
+if(view.startsWith("leads:")){L.file=view.slice(6);L.path=L.file.split("/").slice(0,-1).join("/");view="leads"}
+if(view.startsWith("enrich:")){E.input=view.slice(7);view="enrich"}
+if(view==="search")view="contacts";
+addEventListener("hashchange",()=>{const v=decodeURIComponent(location.hash.slice(1))||"today";if(v!==view&&v!=="log"){view=v;clearInterval(timer);chrome();render()}});
+refresh().then(render);setInterval(refresh,4000);
+</script>
+</body>
+</html>
